@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { TriviaList } from "@/components/trivia/TriviaList";
 import { CategoryBadge } from "@/components/category/CategoryBadge";
 import Link from "next/link";
+import Image from "next/image";
 import type { TriviaWithDetails, Category } from "@/types/database";
 
 export default async function HomePage() {
@@ -78,12 +79,16 @@ export default async function HomePage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* ヒーローセクション */}
       <section className="text-center mb-12">
-        {/* ピンクのぞうさんマスコット */}
+        {/* マスコット画像 */}
         <div className="mb-6">
           <div className="inline-block elephant-bounce">
-            <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg mx-auto">
-              <span className="text-5xl">🐬</span>
-            </div>
+            <Image
+              src="/mascot.png"
+              alt="mamaneマスコット"
+              width={150}
+              height={150}
+              className="mx-auto"
+            />
           </div>
         </div>
 
