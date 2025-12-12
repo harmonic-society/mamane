@@ -8,7 +8,7 @@ export function Footer() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-sm">
-              <span className="text-lg">🐘</span>
+              <span className="text-lg">🐬</span>
             </div>
             <span className="font-bold text-pink-600">mamane</span>
           </Link>

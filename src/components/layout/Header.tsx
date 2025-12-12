@@ -23,7 +23,7 @@ export function Header({ user }: HeaderProps) {
               whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
               transition={{ duration: 0.3 }}
             >
-              <span className="text-2xl">🐘</span>
+              <span className="text-2xl">🐬</span>
             </motion.div>
             <span className="text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-600 bg-clip-text text-transparent">
               mamane

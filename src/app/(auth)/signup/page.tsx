@@ -76,7 +76,7 @@ export default function SignupPage() {
         {/* ぞうさんマスコット */}
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-md">
-            <span className="text-3xl">🐘</span>
+            <span className="text-3xl">🐬</span>
           </div>
         </div>
         <h1 className="text-2xl font-bold text-center mb-6">新規登録</h1>

@@ -104,7 +104,7 @@ export default function NewTriviaPage() {
 
       <div className="bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <span className="text-2xl">🐘</span>
+          <span className="text-2xl">🐬</span>
           豆知識を投稿する
         </h1>
 
@@ -197,7 +197,7 @@ export default function NewTriviaPage() {
               </>
             ) : (
               <>
-                <span className="text-xl">🐘</span>
+                <span className="text-xl">🐬</span>
                 投稿する
               </>
             )}

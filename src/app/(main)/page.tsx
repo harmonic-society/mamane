@@ -82,7 +82,7 @@ export default async function HomePage() {
         <div className="mb-6">
           <div className="inline-block elephant-bounce">
             <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg mx-auto">
-              <span className="text-5xl">🐘</span>
+              <span className="text-5xl">🐬</span>
             </div>
           </div>
         </div>
@@ -96,13 +96,13 @@ export default async function HomePage() {
           豆知識を共有しよう
         </h1>
         <p className="text-gray-600 text-lg mb-6">
-          ぞうさんと一緒に面白い雑学を投稿して、みんなから「へぇ」をもらおう！
+          イルカと一緒に面白い雑学を投稿して、みんなから「へぇ」をもらおう！
         </p>
         <Link
           href="/trivia/new"
           className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-400 to-pink-600 text-white px-6 py-3 rounded-full font-medium hover:shadow-lg transition-shadow"
         >
-          <span className="text-xl">🐘</span>
+          <span className="text-xl">🐬</span>
           豆知識を投稿する
         </Link>
       </section>
