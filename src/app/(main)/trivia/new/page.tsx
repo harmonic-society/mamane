@@ -5,14 +5,11 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import type { Category } from "@/types/database";
 
 export default function NewTriviaPage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -30,15 +27,6 @@ export default function NewTriviaPage() {
         return;
       }
       setUserId(user.id);
-
-      // カテゴリ取得
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .order("sort_order");
-      if (data) {
-        setCategories(data);
-      }
     };
     init();
   }, [router]);
@@ -55,10 +43,6 @@ export default function NewTriviaPage() {
       setError("本文は10文字以上で入力してください");
       return;
     }
-    if (!categoryId) {
-      setError("カテゴリを選択してください");
-      return;
-    }
 
     setIsLoading(true);
 
@@ -69,7 +53,6 @@ export default function NewTriviaPage() {
         user_id: userId!,
         title,
         content,
-        category_id: categoryId,
       } as any)
       .select()
       .single();
@@ -115,41 +98,6 @@ export default function NewTriviaPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* カテゴリ選択 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              カテゴリ
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  type="button"
-                  onClick={() => setCategoryId(category.id)}
-                  className={`
-                    px-4 py-2 rounded-full text-sm font-medium transition-all
-                    ${
-                      categoryId === category.id
-                        ? "ring-2 ring-offset-2 ring-pink-400"
-                        : "hover:opacity-80"
-                    }
-                  `}
-                  style={{
-                    backgroundColor:
-                      categoryId === category.id
-                        ? category.color
-                        : `${category.color}20`,
-                    color:
-                      categoryId === category.id ? "white" : category.color,
-                  }}
-                >
-                  <span className="mr-1">{category.icon}</span>
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* タイトル */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
