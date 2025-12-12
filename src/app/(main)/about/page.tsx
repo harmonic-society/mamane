@@ -31,7 +31,7 @@ export default function AboutPage() {
         <section>
           <h2 className="text-xl font-bold text-pink-600 mb-4">「ラッシャー！」って何？</h2>
           <p className="text-gray-600 leading-relaxed mb-4">
-            「ラッシャー！」は、mamaneオリジナルの応援・共感ボタンです。
+            「ラッシャー！」は、mamaneオリジナルの応援・共感ボタンです。(いいね＝ラッシャー！)
             面白い豆知識を見つけたら、「ラッシャー！」ボタンを押して投稿者を応援しましょう！
           </p>
           <div className="bg-pink-50 rounded-xl p-6 text-center">
