@@ -96,7 +96,7 @@ export default async function HomePage() {
           豆知識を共有しよう
         </h1>
         <p className="text-gray-600 text-lg mb-6">
-          イルカと一緒に面白い雑学を投稿して、みんなから「へぇ」をもらおう！
+          ピンクのイルカと一緒に面白おかしな豆知識を投稿して、みんなから「ラッシャー！」をもらおう！
         </p>
         <Link
           href="/trivia/new"
