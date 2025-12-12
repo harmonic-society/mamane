@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function NewTriviaPage() {
@@ -13,6 +13,7 @@ export default function NewTriviaPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -58,18 +59,43 @@ export default function NewTriviaPage() {
       .single();
 
     if (insertError) {
-      setError("投稿に失敗しました。もう一度お試しください");
+      console.error("Insert error:", insertError);
+      setError(`投稿に失敗しました: ${insertError.message}`);
       setIsLoading(false);
       return;
     }
 
-    router.push(`/trivia/${(data as any).id}`);
+    setIsSuccess(true);
+    setIsLoading(false);
+
+    // 2秒後に詳細ページへ遷移
+    setTimeout(() => {
+      router.push(`/trivia/${(data as any).id}`);
+    }, 2000);
   };
 
   if (!userId) {
     return (
       <div className="flex justify-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+      </div>
+    );
+  }
+
+  // 投稿完了画面
+  if (isSuccess) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+          <div className="mb-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
+              <span className="text-4xl">🐬</span>
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold mb-4 text-pink-600">投稿完了！ラッシャー！</h1>
+          <p className="text-gray-600 mb-2">豆知識が投稿されました</p>
+          <p className="text-gray-400 text-sm">まもなく詳細ページへ移動します...</p>
+        </div>
       </div>
     );
   }
