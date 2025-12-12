@@ -126,8 +126,7 @@ export default async function HomePage() {
 
       {/* 豆知識一覧 */}
       <section>
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <span>🆕</span>
+        <h2 className="text-2xl font-bold mb-6">
           新着の豆知識
         </h2>
         <TriviaList
