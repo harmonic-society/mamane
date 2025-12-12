@@ -19,7 +19,6 @@ export function TriviaList({
   if (triviaList.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-6xl mb-4">🤔</p>
         <p className="text-gray-500">まだ豆知識がありません</p>
       </div>
     );
