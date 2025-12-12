@@ -68,7 +68,7 @@ export default async function RankingPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
         <Trophy className="text-yellow-500" size={32} />
-        へぇランキング
+        ラッシャーランキング
       </h1>
 
       <TriviaList
