@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, Search, PenLine, Trophy, LogIn } from "lucide-react";
+import { Menu, X, Search, PenLine, Trophy, LogIn, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
@@ -38,6 +38,13 @@ export function Header({ user }: HeaderProps) {
             >
               <Trophy size={18} />
               <span>ランキング</span>
+            </Link>
+            <Link
+              href="/about"
+              className="flex items-center gap-1 text-gray-600 hover:text-pink-500 transition-colors"
+            >
+              <HelpCircle size={18} />
+              <span>ラッシャーとは？</span>
             </Link>
             <Link
               href="/search"
@@ -100,6 +107,14 @@ export function Header({ user }: HeaderProps) {
               >
                 <Trophy size={20} className="text-pink-500" />
                 <span>ランキング</span>
+              </Link>
+              <Link
+                href="/about"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-2 p-3 rounded-lg hover:bg-pink-100"
+              >
+                <HelpCircle size={20} className="text-pink-500" />
+                <span>ラッシャーとは？</span>
               </Link>
               <Link
                 href="/search"
