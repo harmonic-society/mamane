@@ -78,8 +78,17 @@ export default async function HomePage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* ヒーローセクション */}
       <section className="text-center mb-12">
+        {/* ピンクのぞうさんマスコット */}
+        <div className="mb-6">
+          <div className="inline-block elephant-bounce">
+            <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg mx-auto">
+              <span className="text-5xl">🐘</span>
+            </div>
+          </div>
+        </div>
+
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-pink-500 to-pink-600 bg-clip-text text-transparent">
             へぇ〜
           </span>
           と言いたくなる
@@ -87,13 +96,13 @@ export default async function HomePage() {
           豆知識を共有しよう
         </h1>
         <p className="text-gray-600 text-lg mb-6">
-          面白い雑学を投稿して、みんなから「へぇ」をもらおう！
+          ぞうさんと一緒に面白い雑学を投稿して、みんなから「へぇ」をもらおう！
         </p>
         <Link
           href="/trivia/new"
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-6 py-3 rounded-full font-medium hover:shadow-lg transition-shadow"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-400 to-pink-600 text-white px-6 py-3 rounded-full font-medium hover:shadow-lg transition-shadow"
         >
-          <span className="text-xl">💡</span>
+          <span className="text-xl">🐘</span>
           豆知識を投稿する
         </Link>
       </section>

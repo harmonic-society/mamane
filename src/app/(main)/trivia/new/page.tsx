@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Category } from "@/types/database";
 
@@ -86,7 +86,7 @@ export default function NewTriviaPage() {
   if (!userId) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-yellow-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
       </div>
     );
   }
@@ -96,7 +96,7 @@ export default function NewTriviaPage() {
       {/* 戻るリンク */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-700 mb-6 transition-colors"
+        className="inline-flex items-center gap-1 text-gray-500 hover:text-pink-500 mb-6 transition-colors"
       >
         <ArrowLeft size={18} />
         <span>戻る</span>
@@ -104,7 +104,7 @@ export default function NewTriviaPage() {
 
       <div className="bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Sparkles className="text-yellow-500" />
+          <span className="text-2xl">🐘</span>
           豆知識を投稿する
         </h1>
 
@@ -130,7 +130,7 @@ export default function NewTriviaPage() {
                     px-4 py-2 rounded-full text-sm font-medium transition-all
                     ${
                       categoryId === category.id
-                        ? "ring-2 ring-offset-2 ring-yellow-400"
+                        ? "ring-2 ring-offset-2 ring-pink-400"
                         : "hover:opacity-80"
                     }
                   `}
@@ -162,7 +162,7 @@ export default function NewTriviaPage() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value.slice(0, 100))}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
               placeholder="例：バナナは実は草の実である"
             />
           </div>
@@ -179,7 +179,7 @@ export default function NewTriviaPage() {
               value={content}
               onChange={(e) => setContent(e.target.value.slice(0, 1000))}
               rows={6}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 outline-none transition-all resize-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all resize-none"
               placeholder="豆知識の詳細を書いてください..."
             />
           </div>
@@ -188,7 +188,7 @@ export default function NewTriviaPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-4 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold text-lg hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-lg bg-gradient-to-r from-pink-400 to-pink-600 text-white font-bold text-lg hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -197,7 +197,7 @@ export default function NewTriviaPage() {
               </>
             ) : (
               <>
-                <span className="text-xl">💡</span>
+                <span className="text-xl">🐘</span>
                 投稿する
               </>
             )}

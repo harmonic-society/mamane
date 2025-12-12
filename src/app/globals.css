@@ -3,14 +3,36 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8fafc;
+  --background: #FDF2F8;
   --foreground: #1a1a1a;
+  --pink-primary: #EC4899;
+  --pink-light: #F472B6;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
+}
+
+/* Elephant mascot animation */
+@keyframes elephant-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes trunk-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.elephant-bounce {
+  animation: elephant-bounce 2s ease-in-out infinite;
+}
+
+.trunk-wave {
+  animation: trunk-wave 1s ease-in-out infinite;
 }
 
 @layer utilities {

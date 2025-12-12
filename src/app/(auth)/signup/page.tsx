@@ -73,6 +73,12 @@ export default function SignupPage() {
   return (
     <div className="w-full max-w-md">
       <div className="bg-white rounded-2xl shadow-xl p-8">
+        {/* ぞうさんマスコット */}
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-md">
+            <span className="text-3xl">🐘</span>
+          </div>
+        </div>
         <h1 className="text-2xl font-bold text-center mb-6">新規登録</h1>
 
         {error && (
@@ -93,7 +99,7 @@ export default function SignupPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
                 placeholder="mamane_user"
               />
             </div>
@@ -110,7 +116,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
                 placeholder="example@email.com"
               />
             </div>
@@ -127,7 +133,7 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
                 placeholder="6文字以上"
               />
             </div>
@@ -136,7 +142,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-medium hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-lg bg-gradient-to-r from-pink-400 to-pink-600 text-white font-medium hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -151,7 +157,7 @@ export default function SignupPage() {
 
         <p className="text-center text-gray-500 text-sm mt-6">
           既にアカウントをお持ちの方は
-          <Link href="/login" className="text-yellow-600 hover:underline ml-1">
+          <Link href="/login" className="text-pink-600 hover:underline ml-1">
             ログイン
           </Link>
         </p>
