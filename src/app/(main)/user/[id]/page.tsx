@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { User, Image as ImageIcon, Calendar, Users, Heart, LogOut, Loader2, Save } from "lucide-react";
+import { User, Calendar, Users, Heart, LogOut, Loader2, Save } from "lucide-react";
 
 const AGE_GROUPS = [
   "10代",
@@ -21,28 +21,13 @@ const GENDERS = [
   "回答しない",
 ];
 
-const INTERESTS = [
-  "雑学",
-  "科学",
-  "歴史",
-  "生活",
-  "動物",
-  "食べ物",
-  "スポーツ",
-  "音楽",
-  "映画",
-  "ゲーム",
-  "テクノロジー",
-  "アート",
-];
-
 interface Profile {
   id: string;
   username: string;
   avatar_url: string | null;
   age_group: string | null;
   gender: string | null;
-  interests: string[] | null;
+  interests: string | null;
 }
 
 export default function UserProfilePage() {
@@ -61,7 +46,7 @@ export default function UserProfilePage() {
   const [username, setUsername] = useState("");
   const [ageGroup, setAgeGroup] = useState("");
   const [gender, setGender] = useState("");
-  const [interests, setInterests] = useState<string[]>([]);
+  const [interests, setInterests] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,20 +74,12 @@ export default function UserProfilePage() {
       setUsername(profile.username || "");
       setAgeGroup(profile.age_group || "");
       setGender(profile.gender || "");
-      setInterests(profile.interests || []);
+      setInterests(profile.interests || "");
       setIsLoading(false);
     };
 
     fetchData();
   }, [userId]);
-
-  const handleInterestToggle = (interest: string) => {
-    if (interests.includes(interest)) {
-      setInterests(interests.filter((i) => i !== interest));
-    } else {
-      setInterests([...interests, interest]);
-    }
-  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -112,7 +89,7 @@ export default function UserProfilePage() {
       username,
       age_group: ageGroup || null,
       gender: gender || null,
-      interests: interests.length > 0 ? interests : null,
+      interests: interests.trim() || null,
     };
 
     const { error } = await (supabase
@@ -203,17 +180,6 @@ export default function UserProfilePage() {
             </div>
           </div>
 
-          {/* アイコン */}
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <ImageIcon className="w-5 h-5 text-pink-500" />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-500 mb-1">アイコン</label>
-              <p className="text-gray-400 text-sm">頭文字が自動で表示されます</p>
-            </div>
-          </div>
-
           {/* 年代 */}
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -270,37 +236,15 @@ export default function UserProfilePage() {
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-500 mb-2">興味のあるもの</label>
               {isEditing ? (
-                <div className="flex flex-wrap gap-2">
-                  {INTERESTS.map((interest) => (
-                    <button
-                      key={interest}
-                      type="button"
-                      onClick={() => handleInterestToggle(interest)}
-                      className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                        interests.includes(interest)
-                          ? "bg-pink-500 text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
-                    >
-                      {interest}
-                    </button>
-                  ))}
-                </div>
+                <textarea
+                  value={interests}
+                  onChange={(e) => setInterests(e.target.value)}
+                  placeholder="例：音楽、映画、旅行、料理..."
+                  rows={3}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none resize-none"
+                />
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {profile?.interests && profile.interests.length > 0 ? (
-                    profile.interests.map((interest) => (
-                      <span
-                        key={interest}
-                        className="px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-sm"
-                      >
-                        {interest}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-gray-400">未設定</p>
-                  )}
-                </div>
+                <p className="text-gray-800">{profile?.interests || "未設定"}</p>
               )}
             </div>
           </div>
@@ -329,7 +273,7 @@ export default function UserProfilePage() {
                     setUsername(profile?.username || "");
                     setAgeGroup(profile?.age_group || "");
                     setGender(profile?.gender || "");
-                    setInterests(profile?.interests || []);
+                    setInterests(profile?.interests || "");
                   }}
                   className="flex-1 py-3 rounded-lg border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-colors"
                 >
