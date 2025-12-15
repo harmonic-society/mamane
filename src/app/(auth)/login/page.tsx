@@ -19,7 +19,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -28,6 +28,23 @@ export default function LoginPage() {
       setError("メールアドレスまたはパスワードが間違っています");
       setIsLoading(false);
       return;
+    }
+
+    // profilesに存在しない場合は作成
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", data.user.id)
+        .single();
+
+      if (!profile) {
+        const username = data.user.user_metadata?.username || `user_${data.user.id.slice(0, 8)}`;
+        await supabase.from("profiles").insert({
+          id: data.user.id,
+          username,
+        } as any);
+      }
     }
 
     router.push("/");
