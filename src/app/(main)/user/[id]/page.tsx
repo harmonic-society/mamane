@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { User, Image as ImageIcon, Calendar, Users, Heart, LogOut, Loader2, Save } from "lucide-react";
-import Link from "next/link";
 
 const AGE_GROUPS = [
   "10代",
@@ -79,17 +78,18 @@ export default function UserProfilePage() {
         .eq("id", userId)
         .single();
 
-      if (profileError) {
+      if (profileError || !profileData) {
         setError("プロフィールが見つかりません");
         setIsLoading(false);
         return;
       }
 
-      setProfile(profileData);
-      setUsername(profileData.username || "");
-      setAgeGroup(profileData.age_group || "");
-      setGender(profileData.gender || "");
-      setInterests(profileData.interests || []);
+      const profile = profileData as Profile;
+      setProfile(profile);
+      setUsername(profile.username || "");
+      setAgeGroup(profile.age_group || "");
+      setGender(profile.gender || "");
+      setInterests(profile.interests || []);
       setIsLoading(false);
     };
 
@@ -108,14 +108,16 @@ export default function UserProfilePage() {
     setIsSaving(true);
     const supabase = createClient();
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        username,
-        age_group: ageGroup || null,
-        gender: gender || null,
-        interests: interests.length > 0 ? interests : null,
-      })
+    const updateData = {
+      username,
+      age_group: ageGroup || null,
+      gender: gender || null,
+      interests: interests.length > 0 ? interests : null,
+    };
+
+    const { error } = await (supabase
+      .from("profiles") as any)
+      .update(updateData)
       .eq("id", userId);
 
     if (error) {
