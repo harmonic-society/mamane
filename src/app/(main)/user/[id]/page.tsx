@@ -43,7 +43,6 @@ export default function UserProfilePage() {
   const [error, setError] = useState("");
 
   // 編集用state
-  const [username, setUsername] = useState("");
   const [ageGroup, setAgeGroup] = useState("");
   const [gender, setGender] = useState("");
   const [interests, setInterests] = useState("");
@@ -71,7 +70,6 @@ export default function UserProfilePage() {
 
       const profile = profileData as Profile;
       setProfile(profile);
-      setUsername(profile.username || "");
       setAgeGroup(profile.age_group || "");
       setGender(profile.gender || "");
       setInterests(profile.interests || "");
@@ -86,7 +84,6 @@ export default function UserProfilePage() {
     const supabase = createClient();
 
     const updateData = {
-      username,
       age_group: ageGroup || null,
       gender: gender || null,
       interests: interests.trim() || null,
@@ -102,7 +99,6 @@ export default function UserProfilePage() {
     } else {
       setProfile({
         ...profile!,
-        username,
         age_group: ageGroup,
         gender,
         interests,
@@ -167,16 +163,7 @@ export default function UserProfilePage() {
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-500 mb-1">名前</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none"
-                />
-              ) : (
-                <p className="text-gray-800 font-medium">{profile?.username || "未設定"}</p>
-              )}
+              <p className="text-gray-800 font-medium">{profile?.username || "未設定"}</p>
             </div>
           </div>
 
@@ -270,7 +257,6 @@ export default function UserProfilePage() {
                 <button
                   onClick={() => {
                     setIsEditing(false);
-                    setUsername(profile?.username || "");
                     setAgeGroup(profile?.age_group || "");
                     setGender(profile?.gender || "");
                     setInterests(profile?.interests || "");
