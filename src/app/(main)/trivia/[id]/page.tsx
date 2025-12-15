@@ -2,10 +2,13 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { CategoryBadge } from "@/components/category/CategoryBadge";
 import { HeeButton } from "@/components/trivia/HeeButton";
+import { CommentForm } from "@/components/comment/CommentForm";
+import { CommentList } from "@/components/comment/CommentList";
 import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
+import type { CommentWithAuthor } from "@/types/database";
 
 interface PageProps {
   params: { id: string };
@@ -62,6 +65,32 @@ export default async function TriviaDetailPage({ params }: PageProps) {
       .single();
     hasReacted = !!reaction;
   }
+
+  // コメントを取得
+  const { data: commentsData } = await supabase
+    .from("comments")
+    .select(`
+      id,
+      content,
+      created_at,
+      user_id,
+      profiles!inner (
+        id,
+        username,
+        avatar_url
+      )
+    `)
+    .eq("trivia_id", params.id)
+    .order("created_at", { ascending: true });
+
+  const comments: CommentWithAuthor[] = (commentsData || []).map((item: any) => ({
+    id: item.id,
+    content: item.content,
+    created_at: item.created_at,
+    author_id: item.profiles.id,
+    author_username: item.profiles.username,
+    author_avatar: item.profiles.avatar_url,
+  }));
 
   const profile = trivia.profiles as any;
   const category = trivia.categories as any;
@@ -133,6 +162,23 @@ export default async function TriviaDetailPage({ params }: PageProps) {
           </Link>
         </div>
       </article>
+
+      {/* コメントセクション */}
+      <section className="mt-8 bg-white rounded-2xl shadow-lg p-8">
+        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          <MessageCircle className="w-5 h-5 text-pink-500" />
+          コメント
+          <span className="text-sm font-normal text-gray-400">
+            ({comments.length})
+          </span>
+        </h2>
+
+        <div className="mb-6">
+          <CommentForm triviaId={trivia.id} userId={user?.id} />
+        </div>
+
+        <CommentList comments={comments} />
+      </section>
     </div>
   );
 }

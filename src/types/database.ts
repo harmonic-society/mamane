@@ -107,6 +107,29 @@ export interface Database {
           created_at?: string;
         };
       };
+      comments: {
+        Row: {
+          id: string;
+          trivia_id: string;
+          user_id: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          trivia_id: string;
+          user_id: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          trivia_id?: string;
+          user_id?: string;
+          content?: string;
+          created_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -125,6 +148,17 @@ export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Category = Database["public"]["Tables"]["categories"]["Row"];
 export type Trivia = Database["public"]["Tables"]["trivia"]["Row"];
 export type HeeReaction = Database["public"]["Tables"]["hee_reactions"]["Row"];
+export type Comment = Database["public"]["Tables"]["comments"]["Row"];
+
+// コメントの詳細情報（結合データ）
+export interface CommentWithAuthor {
+  id: string;
+  content: string;
+  created_at: string;
+  author_id: string;
+  author_username: string;
+  author_avatar: string | null;
+}
 
 // 豆知識の詳細情報（結合データ）
 export interface TriviaWithDetails {
