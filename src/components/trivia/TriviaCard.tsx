@@ -6,6 +6,7 @@ import { CategoryBadge } from "@/components/category/CategoryBadge";
 import { HeeButton } from "./HeeButton";
 import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
+import { MessageCircle } from "lucide-react";
 import type { TriviaWithDetails } from "@/types/database";
 
 interface TriviaCardProps {
@@ -90,13 +91,22 @@ export function TriviaCard({ trivia, hasReacted, userId, rank }: TriviaCardProps
           </span>
         </Link>
 
-        {/* へぇボタン */}
-        <HeeButton
-          triviaId={trivia.id}
-          initialCount={trivia.hee_count}
-          hasReacted={hasReacted}
-          userId={userId}
-        />
+        {/* へぇボタンとコメント数 */}
+        <div className="flex items-center gap-4">
+          <Link
+            href={`/trivia/${trivia.id}`}
+            className="flex items-center gap-1 text-gray-400 hover:text-pink-500 transition-colors"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span className="text-sm">{trivia.comment_count}</span>
+          </Link>
+          <HeeButton
+            triviaId={trivia.id}
+            initialCount={trivia.hee_count}
+            hasReacted={hasReacted}
+            userId={userId}
+          />
+        </div>
       </div>
     </motion.article>
   );

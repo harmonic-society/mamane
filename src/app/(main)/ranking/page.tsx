@@ -33,6 +33,9 @@ export default async function RankingPage() {
         slug,
         icon,
         color
+      ),
+      comments (
+        id
       )
     `
     )
@@ -44,6 +47,7 @@ export default async function RankingPage() {
     title: item.title,
     content: item.content,
     hee_count: item.hee_count,
+    comment_count: item.comments?.length || 0,
     created_at: item.created_at,
     author_id: item.profiles.id,
     author_username: item.profiles.username,

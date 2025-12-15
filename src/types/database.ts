@@ -166,6 +166,7 @@ export interface TriviaWithDetails {
   title: string;
   content: string;
   hee_count: number;
+  comment_count: number;
   created_at: string;
   author_id: string;
   author_username: string;
