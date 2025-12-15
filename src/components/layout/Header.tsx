@@ -63,9 +63,9 @@ export function Header({ user }: HeaderProps) {
                   <span>投稿する</span>
                 </Link>
                 <Link
-                  href="/logout"
+                  href={`/user/${user.id}`}
                   className="w-9 h-9 rounded-full bg-pink-200 flex items-center justify-center text-pink-600 hover:bg-pink-300 transition-colors"
-                  title="ログアウト"
+                  title="マイページ"
                 >
                   {user.username.charAt(0).toUpperCase()}
                 </Link>
@@ -136,14 +136,14 @@ export function Header({ user }: HeaderProps) {
                     <span>投稿する</span>
                   </Link>
                   <Link
-                    href="/logout"
+                    href={`/user/${user.id}`}
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center gap-2 p-3 rounded-lg hover:bg-pink-100"
                   >
                     <div className="w-6 h-6 rounded-full bg-pink-200 flex items-center justify-center text-sm text-pink-600">
                       {user.username.charAt(0).toUpperCase()}
                     </div>
-                    <span>ログアウト</span>
+                    <span>マイページ</span>
                   </Link>
                 </>
               ) : (
