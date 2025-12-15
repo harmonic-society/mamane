@@ -68,8 +68,8 @@ export function HeeButton({
           transition-all duration-300 overflow-hidden
           ${
             isReacted
-              ? "bg-yellow-100 text-yellow-700 cursor-default border-2 border-yellow-400"
-              : "bg-gradient-to-r from-yellow-400 to-orange-400 text-white hover:shadow-lg hover:scale-105 cursor-pointer"
+              ? "bg-pink-100 text-pink-700 cursor-default border-2 border-pink-400"
+              : "bg-gradient-to-r from-pink-400 to-pink-600 text-white hover:shadow-lg hover:scale-105 cursor-pointer"
           }
         `}
       >
@@ -81,7 +81,7 @@ export function HeeButton({
               animate={{ scale: 3, opacity: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6 }}
-              className="absolute inset-0 bg-yellow-300 rounded-full"
+              className="absolute inset-0 bg-pink-300 rounded-full"
             />
           )}
         </AnimatePresence>
@@ -92,10 +92,9 @@ export function HeeButton({
             animate={isAnimating ? { scale: [1, 1.3, 1] } : {}}
             transition={{ duration: 0.3 }}
           >
-            {isReacted ? "👏" : "👆"}
+            {isReacted ? "🐬" : "🐬"}
           </motion.span>
-          <span>へぇ</span>
-          {isReacted && <span>!</span>}
+          <span>ラッシャー！</span>
         </span>
       </motion.button>
 
@@ -114,10 +113,10 @@ export function HeeButton({
             }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="absolute text-xl pointer-events-none font-bold text-yellow-500"
+            className="absolute text-xl pointer-events-none font-bold text-pink-500"
             style={{ top: "20%" }}
           >
-            へぇ
+            🐬
           </motion.span>
         ))}
       </AnimatePresence>
@@ -129,8 +128,8 @@ export function HeeButton({
         animate={{ scale: 1 }}
         className="mt-2 text-gray-600 font-bold"
       >
-        <span className="text-xl text-yellow-600">{count.toLocaleString()}</span>
-        <span className="text-sm ml-1">へぇ</span>
+        <span className="text-xl text-pink-600">{count.toLocaleString()}</span>
+        <span className="text-sm ml-1">ラッシャー</span>
       </motion.div>
     </div>
   );
