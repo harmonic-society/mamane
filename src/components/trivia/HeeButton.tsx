@@ -47,6 +47,7 @@ export function HeeButton({
     } as any);
 
     if (error) {
+      console.error("ラッシャー登録エラー:", error);
       setCount((prev) => prev - 1);
       setIsReacted(false);
     }
@@ -86,15 +87,23 @@ export function HeeButton({
           )}
         </AnimatePresence>
 
-        <span className="relative z-10 flex items-center gap-1">
+        <span className="relative z-10 flex items-center gap-2">
           <motion.span
             className="text-2xl"
             animate={isAnimating ? { scale: [1, 1.3, 1] } : {}}
             transition={{ duration: 0.3 }}
           >
-            {isReacted ? "🐬" : "🐬"}
+            🐬
           </motion.span>
           <span>ラッシャー！</span>
+          <motion.span
+            key={count}
+            initial={{ scale: 1.3 }}
+            animate={{ scale: 1 }}
+            className="text-lg font-bold"
+          >
+            {count.toLocaleString()}
+          </motion.span>
         </span>
       </motion.button>
 
@@ -121,16 +130,6 @@ export function HeeButton({
         ))}
       </AnimatePresence>
 
-      {/* カウント表示 */}
-      <motion.div
-        key={count}
-        initial={{ scale: 1.3 }}
-        animate={{ scale: 1 }}
-        className="mt-2 text-gray-600 font-bold"
-      >
-        <span className="text-xl text-pink-600">{count.toLocaleString()}</span>
-        <span className="text-sm ml-1">ラッシャー</span>
-      </motion.div>
     </div>
   );
 }
