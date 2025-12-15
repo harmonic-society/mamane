@@ -33,7 +33,7 @@ export default function AboutPage() {
           <p className="text-gray-600 leading-relaxed mb-4">
             「ラッシャー！」は、mamaneオリジナルの応援・共感ボタンだよ♩いいね＝ラッシャー！ってこと。
             面白い豆知識を見つけたら、「ラッシャー！」ボタンを押して投稿者を応援してね！
-            ちなみに、コメントにもラッシャーを押すことができるよ。みんなでいっぱいラッシャーしようね❤️
+            みんなでいっぱいラッシャーしようね❤️
           </p>
           <div className="bg-pink-50 rounded-xl p-6 text-center">
             <p className="text-pink-600 font-bold text-lg mb-2">
