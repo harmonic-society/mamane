@@ -42,6 +42,12 @@ export default function AboutPage() {
             <p className="text-gray-500 text-sm">
               ランキングで上位を目指してみてね 🐬
             </p>
+            <p className="text-gray-500 text-sm mt-2">
+              ランキング上位の人とラッシャーくんが気に入った豆知識投稿をしてくれた人にはオリジナルアイコンをプレゼント🎁
+            </p>
+            <p className="text-gray-500 text-sm mt-1">
+              更に特典がいっぱいだよ🐬
+            </p>
           </div>
         </section>
 
