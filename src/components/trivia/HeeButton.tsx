@@ -96,16 +96,18 @@ export function HeeButton({
             🐬
           </motion.span>
           <span>ラッシャー！</span>
-          <motion.span
-            key={count}
-            initial={{ scale: 1.3 }}
-            animate={{ scale: 1 }}
-            className="text-lg font-bold"
-          >
-            {count.toLocaleString()}
-          </motion.span>
         </span>
       </motion.button>
+
+      {/* カウント表示 */}
+      <motion.p
+        key={count}
+        initial={{ scale: 1.2 }}
+        animate={{ scale: 1 }}
+        className="mt-2 text-sm text-gray-500"
+      >
+        <span className="font-bold text-pink-500">{count.toLocaleString()}</span> ラッシャー
+      </motion.p>
 
       {/* パーティクル */}
       <AnimatePresence>
