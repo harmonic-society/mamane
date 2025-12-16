@@ -33,6 +33,19 @@ export default function SignupPage() {
 
     const supabase = createClient();
 
+    // ユーザー名の重複チェック
+    const { data: existingUser } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", username)
+      .single();
+
+    if (existingUser) {
+      setError("この名前は使われております");
+      setIsLoading(false);
+      return;
+    }
+
     // ユーザー登録
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
