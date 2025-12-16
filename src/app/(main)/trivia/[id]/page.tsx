@@ -141,7 +141,7 @@ export default async function TriviaDetailPage({ params }: PageProps) {
         </div>
 
         {/* 投稿者情報 */}
-        <div className="flex items-center justify-between">
+        <div>
           <Link
             href={`/user/${profile.id}`}
             className="flex items-center gap-3 group"
@@ -164,11 +164,13 @@ export default async function TriviaDetailPage({ params }: PageProps) {
 
           {/* 削除ボタン（投稿者のみ表示） */}
           {user && (
-            <DeleteButton
-              triviaId={trivia.id}
-              userId={user.id}
-              authorId={profile.id}
-            />
+            <div className="mt-4">
+              <DeleteButton
+                triviaId={trivia.id}
+                userId={user.id}
+                authorId={profile.id}
+              />
+            </div>
           )}
         </div>
       </article>
