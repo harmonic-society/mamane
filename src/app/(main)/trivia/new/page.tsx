@@ -6,40 +6,6 @@ import { createClient } from "@/lib/supabase/client";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 
-// キラキラ音を生成する関数
-const playSparkleSound = () => {
-  try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-
-    // 複数の音を重ねてキラキラ感を出す
-    const notes = [1200, 1500, 1800, 2100, 2400];
-
-    notes.forEach((freq, index) => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-
-      // 時間差で音を鳴らす
-      const startTime = audioContext.currentTime + index * 0.08;
-      const duration = 0.3;
-
-      gainNode.gain.setValueAtTime(0, startTime);
-      gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.02);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-
-      oscillator.start(startTime);
-      oscillator.stop(startTime + duration);
-    });
-  } catch {
-    console.log("Audio not supported");
-  }
-};
-
 export default function NewTriviaPage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -101,9 +67,6 @@ export default function NewTriviaPage() {
 
     setIsSuccess(true);
     setIsLoading(false);
-
-    // キラキラ音を再生
-    playSparkleSound();
 
     // 2秒後に詳細ページへ遷移
     setTimeout(() => {
