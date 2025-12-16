@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -14,6 +14,38 @@ export default function NewTriviaPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  // キラキラ音を再生する関数
+  const playSparkleSound = () => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      }
+      const ctx = audioContextRef.current;
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
+
+      const notes = [1200, 1500, 1800, 2100, 2400];
+      notes.forEach((freq, index) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        const start = ctx.currentTime + index * 0.08;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.12, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.25);
+        osc.start(start);
+        osc.stop(start + 0.25);
+      });
+    } catch {
+      // Audio API not supported - fail silently
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -67,6 +99,9 @@ export default function NewTriviaPage() {
 
     setIsSuccess(true);
     setIsLoading(false);
+
+    // キラキラ音を再生
+    playSparkleSound();
 
     // 2秒後に詳細ページへ遷移
     setTimeout(() => {
