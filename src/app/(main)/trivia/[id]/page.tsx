@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
 import Link from "next/link";
 import { ArrowLeft, MessageCircle } from "lucide-react";
+import { DeleteButton } from "@/components/trivia/DeleteButton";
 import type { CommentWithAuthor } from "@/types/database";
 
 interface PageProps {
@@ -160,6 +161,15 @@ export default async function TriviaDetailPage({ params }: PageProps) {
               </p>
             </div>
           </Link>
+
+          {/* 削除ボタン（投稿者のみ表示） */}
+          {user && (
+            <DeleteButton
+              triviaId={trivia.id}
+              userId={user.id}
+              authorId={profile.id}
+            />
+          )}
         </div>
       </article>
 
