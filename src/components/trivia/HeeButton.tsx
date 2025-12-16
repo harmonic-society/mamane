@@ -23,6 +23,7 @@ export function HeeButton({
   const [isReacted, setIsReacted] = useState(hasReacted);
   const [isAnimating, setIsAnimating] = useState(false);
   const [particles, setParticles] = useState<number[]>([]);
+  const [stars, setStars] = useState<number[]>([]);
 
   const handleClick = async () => {
     if (!userId) {
@@ -38,6 +39,8 @@ export function HeeButton({
 
     // パーティクルエフェクト
     setParticles([...Array(10)].map((_, i) => i));
+    // キラキラ星エフェクト
+    setStars([...Array(15)].map((_, i) => i));
 
     const supabase = createClient();
 
@@ -55,6 +58,7 @@ export function HeeButton({
     setTimeout(() => {
       setIsAnimating(false);
       setParticles([]);
+      setStars([]);
     }, 800);
   };
 
@@ -109,11 +113,11 @@ export function HeeButton({
         <span className="font-bold text-pink-500">{count.toLocaleString()}</span> ラッシャー
       </motion.p>
 
-      {/* パーティクル */}
+      {/* パーティクル（イルカ） */}
       <AnimatePresence>
         {particles.map((i) => (
           <motion.span
-            key={i}
+            key={`dolphin-${i}`}
             initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
             animate={{
               opacity: 0,
@@ -130,6 +134,42 @@ export function HeeButton({
             🐬
           </motion.span>
         ))}
+      </AnimatePresence>
+
+      {/* キラキラ星エフェクト */}
+      <AnimatePresence>
+        {stars.map((i) => {
+          const starEmojis = ["✨", "⭐", "🌟", "💫"];
+          const emoji = starEmojis[i % starEmojis.length];
+          const angle = (i / 15) * 360;
+          const distance = 60 + Math.random() * 40;
+          const endX = Math.cos((angle * Math.PI) / 180) * distance;
+          const endY = Math.sin((angle * Math.PI) / 180) * distance - 40;
+
+          return (
+            <motion.span
+              key={`star-${i}`}
+              initial={{ opacity: 1, y: 0, x: 0, scale: 0.5 }}
+              animate={{
+                opacity: [1, 1, 0],
+                y: endY,
+                x: endX,
+                scale: [0.5, 1.2, 0.8],
+                rotate: Math.random() * 360,
+              }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.7 + Math.random() * 0.3,
+                ease: "easeOut",
+                delay: Math.random() * 0.1,
+              }}
+              className="absolute text-lg pointer-events-none"
+              style={{ top: "30%" }}
+            >
+              {emoji}
+            </motion.span>
+          );
+        })}
       </AnimatePresence>
 
     </div>
