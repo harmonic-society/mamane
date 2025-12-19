@@ -6,10 +6,23 @@ import { createClient } from "@/lib/supabase/client";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 
+// カテゴリの定義
+const CATEGORIES = [
+  { id: "lifestyle", name: "生活", icon: "🏠", color: "#2196F3" },
+  { id: "fashion", name: "ファッション", icon: "👗", color: "#E91E63" },
+  { id: "music", name: "音楽", icon: "🎵", color: "#9C27B0" },
+  { id: "anime", name: "漫画アニメ", icon: "📺", color: "#FF5722" },
+  { id: "game", name: "ゲーム", icon: "🎮", color: "#4CAF50" },
+  { id: "hobby", name: "趣味", icon: "⭐", color: "#FF9800" },
+  { id: "overseas", name: "海外", icon: "🌍", color: "#00BCD4" },
+  { id: "other", name: "その他", icon: "💡", color: "#607D8B" },
+];
+
 export default function NewTriviaPage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -68,6 +81,10 @@ export default function NewTriviaPage() {
     e.preventDefault();
     setError("");
 
+    if (!selectedCategory) {
+      setError("カテゴリを選択してください");
+      return;
+    }
     if (title.length < 5) {
       setError("タイトルは5文字以上で入力してください");
       return;
@@ -80,12 +97,21 @@ export default function NewTriviaPage() {
     setIsLoading(true);
 
     const supabase = createClient();
+
+    // カテゴリIDを取得
+    const { data: categoryData } = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", selectedCategory)
+      .single() as { data: { id: string } | null };
+
     const { data, error: insertError } = await supabase
       .from("trivia")
       .insert({
         user_id: userId!,
         title,
         content,
+        category_id: categoryData?.id || null,
       } as any)
       .select()
       .single();
@@ -159,10 +185,38 @@ export default function NewTriviaPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* カテゴリ選択 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              カテゴリ <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`
+                    px-3 py-2 rounded-lg text-sm font-medium transition-all
+                    flex items-center justify-center gap-1
+                    ${
+                      selectedCategory === cat.id
+                        ? "ring-2 ring-pink-400 bg-pink-50 text-pink-700"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }
+                  `}
+                >
+                  <span>{cat.icon}</span>
+                  <span>{cat.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* タイトル */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              タイトル
+              タイトル <span className="text-red-500">*</span>
               <span className="text-gray-400 font-normal ml-2">
                 ({title.length}/100)
               </span>
@@ -179,7 +233,7 @@ export default function NewTriviaPage() {
           {/* 本文 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              本文
+              本文 <span className="text-red-500">*</span>
               <span className="text-gray-400 font-normal ml-2">
                 ({content.length}/1000)
               </span>
