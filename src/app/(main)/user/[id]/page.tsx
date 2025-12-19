@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { User, Calendar, Users, Heart, LogOut, Loader2, Save } from "lucide-react";
+import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera } from "lucide-react";
+import Image from "next/image";
 
 const AGE_GROUPS = [
   "10代",
@@ -34,12 +35,14 @@ export default function UserProfilePage() {
   const router = useRouter();
   const params = useParams();
   const userId = params.id as string;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [error, setError] = useState("");
 
   // 編集用state
@@ -78,6 +81,84 @@ export default function UserProfilePage() {
 
     fetchData();
   }, [userId]);
+
+  const handleAvatarClick = () => {
+    if (currentUserId === userId && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // ファイルサイズチェック (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError("画像サイズは2MB以下にしてください");
+      return;
+    }
+
+    // ファイルタイプチェック
+    if (!file.type.startsWith("image/")) {
+      setError("画像ファイルを選択してください");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    setError("");
+
+    const supabase = createClient();
+
+    // ファイル名を生成
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${userId}-${Date.now()}.${fileExt}`;
+    const filePath = `avatars/${fileName}`;
+
+    // 古いアバターを削除（存在する場合）
+    if (profile?.avatar_url) {
+      const oldPath = profile.avatar_url.split("/").pop();
+      if (oldPath) {
+        await supabase.storage.from("avatars").remove([`avatars/${oldPath}`]);
+      }
+    }
+
+    // 新しいアバターをアップロード
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error("Upload error:", uploadError);
+      setError("画像のアップロードに失敗しました");
+      setIsUploadingAvatar(false);
+      return;
+    }
+
+    // 公開URLを取得
+    const { data: { publicUrl } } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(filePath);
+
+    // プロフィールを更新
+    const { error: updateError } = await (supabase
+      .from("profiles") as any)
+      .update({ avatar_url: publicUrl })
+      .eq("id", userId);
+
+    if (updateError) {
+      setError("プロフィールの更新に失敗しました");
+    } else {
+      setProfile({
+        ...profile!,
+        avatar_url: publicUrl,
+      });
+    }
+
+    setIsUploadingAvatar(false);
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -140,10 +221,48 @@ export default function UserProfilePage() {
       <div className="bg-white rounded-2xl shadow-xl p-8">
         {/* ヘッダー */}
         <div className="flex justify-center mb-6">
-          <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-4xl text-white font-bold">
-              {profile?.username?.charAt(0).toUpperCase()}
-            </span>
+          <div className="relative">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleAvatarChange}
+              accept="image/*"
+              className="hidden"
+            />
+            <button
+              onClick={handleAvatarClick}
+              disabled={!isOwner || isUploadingAvatar}
+              className={`
+                w-24 h-24 rounded-full overflow-hidden shadow-lg
+                ${isOwner ? "cursor-pointer hover:opacity-80" : "cursor-default"}
+                transition-opacity relative
+              `}
+            >
+              {isUploadingAvatar ? (
+                <div className="w-full h-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-white" />
+                </div>
+              ) : profile?.avatar_url ? (
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.username}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center">
+                  <span className="text-4xl text-white font-bold">
+                    {profile?.username?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </button>
+            {isOwner && !isUploadingAvatar && (
+              <div className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center border-2 border-pink-400">
+                <Camera className="w-4 h-4 text-pink-500" />
+              </div>
+            )}
           </div>
         </div>
 
