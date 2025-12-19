@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, X, Search, PenLine, Trophy, LogIn, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
-  user?: { id: string; username: string } | null;
+  user?: { id: string; username: string; avatar_url?: string | null } | null;
 }
 
 export function Header({ user }: HeaderProps) {
@@ -64,10 +65,22 @@ export function Header({ user }: HeaderProps) {
                 </Link>
                 <Link
                   href={`/user/${user.id}`}
-                  className="w-9 h-9 rounded-full bg-pink-200 flex items-center justify-center text-pink-600 hover:bg-pink-300 transition-colors"
+                  className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center hover:opacity-80 transition-opacity"
                   title="マイページ"
                 >
-                  {user.username.charAt(0).toUpperCase()}
+                  {user.avatar_url ? (
+                    <Image
+                      src={user.avatar_url}
+                      alt={user.username}
+                      width={36}
+                      height={36}
+                      className="w-9 h-9 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-medium">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 </Link>
               </>
             ) : (
@@ -140,9 +153,19 @@ export function Header({ user }: HeaderProps) {
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center gap-2 p-3 rounded-lg hover:bg-pink-100"
                   >
-                    <div className="w-6 h-6 rounded-full bg-pink-200 flex items-center justify-center text-sm text-pink-600">
-                      {user.username.charAt(0).toUpperCase()}
-                    </div>
+                    {user.avatar_url ? (
+                      <Image
+                        src={user.avatar_url}
+                        alt={user.username}
+                        width={24}
+                        height={24}
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-sm text-white">
+                        {user.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <span>マイページ</span>
                   </Link>
                 </>
