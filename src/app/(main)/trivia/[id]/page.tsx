@@ -7,6 +7,7 @@ import { CommentList } from "@/components/comment/CommentList";
 import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { DeleteButton } from "@/components/trivia/DeleteButton";
 import type { CommentWithAuthor } from "@/types/database";
@@ -147,9 +148,19 @@ export default async function TriviaDetailPage({ params }: PageProps) {
             href={`/user/${profile.id}`}
             className="flex items-center gap-3 group"
           >
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-200 to-orange-200 flex items-center justify-center text-lg font-medium text-yellow-700">
-              {profile.username.charAt(0).toUpperCase()}
-            </div>
+            {profile.avatar_url ? (
+              <Image
+                src={profile.avatar_url}
+                alt={profile.username}
+                width={48}
+                height={48}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-lg font-medium text-white">
+                {profile.username.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div>
               <p className="font-medium text-gray-800 group-hover:text-yellow-600 transition-colors">
                 {profile.username}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { CategoryBadge } from "@/components/category/CategoryBadge";
 import { HeeButton } from "./HeeButton";
@@ -83,9 +84,19 @@ export function TriviaCard({ trivia, hasReacted, userId, rank }: TriviaCardProps
           href={`/user/${trivia.author_id}`}
           className="flex items-center gap-2 group"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-200 to-orange-200 flex items-center justify-center text-sm font-medium text-yellow-700">
-            {trivia.author_username.charAt(0).toUpperCase()}
-          </div>
+          {trivia.author_avatar ? (
+            <Image
+              src={trivia.author_avatar}
+              alt={trivia.author_username}
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-sm font-medium text-white">
+              {trivia.author_username.charAt(0).toUpperCase()}
+            </div>
+          )}
           <span className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">
             {trivia.author_username}
           </span>
