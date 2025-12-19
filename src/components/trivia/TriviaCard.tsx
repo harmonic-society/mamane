@@ -105,6 +105,7 @@ export function TriviaCard({ trivia, hasReacted, userId, rank }: TriviaCardProps
             initialCount={trivia.hee_count}
             hasReacted={hasReacted}
             userId={userId}
+            authorId={trivia.author_id}
           />
         </div>
       </div>

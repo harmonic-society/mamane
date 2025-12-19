@@ -137,6 +137,7 @@ export default async function TriviaDetailPage({ params }: PageProps) {
             initialCount={trivia.hee_count}
             hasReacted={hasReacted}
             userId={user?.id}
+            authorId={profile.id}
           />
         </div>
 

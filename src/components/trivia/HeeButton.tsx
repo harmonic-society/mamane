@@ -10,6 +10,7 @@ interface HeeButtonProps {
   initialCount: number;
   hasReacted: boolean;
   userId?: string;
+  authorId?: string;
 }
 
 export function HeeButton({
@@ -17,7 +18,10 @@ export function HeeButton({
   initialCount,
   hasReacted,
   userId,
+  authorId,
 }: HeeButtonProps) {
+  // 自分の投稿かどうか
+  const isOwnPost = userId && authorId && userId === authorId;
   const router = useRouter();
   const [count, setCount] = useState(initialCount);
   const [isReacted, setIsReacted] = useState(hasReacted);
@@ -30,6 +34,9 @@ export function HeeButton({
       router.push("/login");
       return;
     }
+
+    // 自分の投稿には押せない
+    if (isOwnPost) return;
 
     if (isReacted || isAnimating) return;
 
@@ -66,13 +73,15 @@ export function HeeButton({
     <div className="relative inline-flex flex-col items-center">
       <motion.button
         onClick={handleClick}
-        disabled={isReacted}
+        disabled={isReacted || !!isOwnPost}
         whileTap={{ scale: 0.9 }}
         className={`
           relative px-6 py-3 rounded-full font-bold text-lg
           transition-all duration-300 overflow-hidden
           ${
-            isReacted
+            isOwnPost
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-200"
+              : isReacted
               ? "bg-pink-100 text-pink-700 cursor-default border-2 border-pink-400"
               : "bg-gradient-to-r from-pink-400 to-pink-600 text-white hover:shadow-lg hover:scale-105 cursor-pointer"
           }
