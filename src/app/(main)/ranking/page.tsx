@@ -76,7 +76,7 @@ export default async function RankingPage() {
       </h1>
 
       <TriviaList
-        triviaList={triviaList}
+        initialTriviaList={triviaList}
         userReactions={userReactions}
         userId={user?.id}
         showRank={true}

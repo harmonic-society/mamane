@@ -98,7 +98,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
             </span>
           </p>
           <TriviaList
-            triviaList={triviaList}
+            initialTriviaList={triviaList}
             userReactions={userReactions}
             userId={user?.id}
           />

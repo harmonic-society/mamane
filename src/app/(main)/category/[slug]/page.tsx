@@ -111,7 +111,7 @@ export default async function CategoryPage({ params }: PageProps) {
       </h1>
 
       <TriviaList
-        triviaList={triviaList}
+        initialTriviaList={triviaList}
         userReactions={userReactions}
         userId={user?.id}
       />

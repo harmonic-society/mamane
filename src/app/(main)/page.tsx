@@ -139,7 +139,7 @@ export default async function HomePage() {
           新着の豆知識
         </h2>
         <TriviaList
-          triviaList={triviaList}
+          initialTriviaList={triviaList}
           userReactions={userReactions}
           userId={user?.id}
         />
