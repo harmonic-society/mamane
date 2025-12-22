@@ -3,11 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { Menu, X, Search, PenLine, Trophy, LogIn, HelpCircle } from "lucide-react";
+import { Menu, X, Search, PenLine, Trophy, LogIn, HelpCircle, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
-  user?: { id: string; username: string; avatar_url?: string | null } | null;
+  user?: { id: string; username: string; avatar_url?: string | null; is_admin?: boolean } | null;
 }
 
 export function Header({ user }: HeaderProps) {
@@ -63,6 +63,15 @@ export function Header({ user }: HeaderProps) {
                   <PenLine size={18} />
                   <span>投稿する</span>
                 </Link>
+                {user.is_admin && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-1 text-gray-600 hover:text-pink-500 transition-colors"
+                    title="管理者"
+                  >
+                    <Shield size={18} />
+                  </Link>
+                )}
                 <Link
                   href={`/user/${user.id}`}
                   className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center hover:opacity-80 transition-opacity"
@@ -168,6 +177,16 @@ export function Header({ user }: HeaderProps) {
                     )}
                     <span>マイページ</span>
                   </Link>
+                  {user.is_admin && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center gap-2 p-3 rounded-lg hover:bg-pink-100"
+                    >
+                      <Shield size={20} className="text-pink-500" />
+                      <span>管理者</span>
+                    </Link>
+                  )}
                 </>
               ) : (
                 <Link

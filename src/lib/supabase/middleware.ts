@@ -38,7 +38,24 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // BANされたユーザーをログアウトさせる
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_banned")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.is_banned) {
+      // BANされている場合はセッションを削除してログインページにリダイレクト
+      await supabase.auth.signOut();
+      const bannedUrl = new URL("/login", request.url);
+      bannedUrl.searchParams.set("error", "banned");
+      return NextResponse.redirect(bannedUrl);
+    }
+  }
 
   return response;
 }
