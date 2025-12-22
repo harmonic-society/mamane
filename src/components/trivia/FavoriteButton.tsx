@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark } from "lucide-react";
+import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface FavoriteButtonProps {
@@ -53,7 +53,7 @@ export function FavoriteButton({ triviaId, initialFavorited = false, userId }: F
       disabled={isLoading}
       whileTap={{ scale: 0.9 }}
       className={`
-        p-2 rounded-full transition-colors
+        flex items-center gap-1 px-3 py-1.5 rounded-full transition-colors text-sm
         ${isFavorited
           ? "text-yellow-500 bg-yellow-50"
           : "text-gray-400 hover:text-yellow-500 hover:bg-yellow-50"
@@ -62,9 +62,10 @@ export function FavoriteButton({ triviaId, initialFavorited = false, userId }: F
       `}
       title={isFavorited ? "お気に入りを解除" : "お気に入りに追加"}
     >
-      <Bookmark
-        className={`w-5 h-5 ${isFavorited ? "fill-current" : ""}`}
+      <Star
+        className={`w-4 h-4 ${isFavorited ? "fill-current" : ""}`}
       />
+      <span>お気に入り</span>
     </motion.button>
   );
 }
