@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     // お気に入りに追加
     const { error } = await supabase
       .from("favorites")
-      .insert({ trivia_id: triviaId, user_id: user.id });
+      .insert({ trivia_id: triviaId, user_id: user.id } as any);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
