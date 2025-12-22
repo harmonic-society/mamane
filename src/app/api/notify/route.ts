@@ -27,12 +27,17 @@ export async function POST(request: NextRequest) {
 
     const recipientEmail = userData.user.email;
 
-    // 受信者のプロフィールを取得
+    // 受信者のプロフィールを取得（通知設定も含む）
     const { data: profile } = await supabase
       .from("profiles")
-      .select("username")
+      .select("username, email_notifications")
       .eq("id", recipientUserId)
-      .single() as { data: { username: string } | null; error: any };
+      .single() as { data: { username: string; email_notifications: boolean | null } | null; error: any };
+
+    // 通知がオフの場合は送信しない
+    if (profile?.email_notifications === false) {
+      return NextResponse.json({ success: true, skipped: true, reason: "notifications_disabled" });
+    }
 
     const recipientName = profile?.username || "ユーザー";
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mamane.vercel.app";

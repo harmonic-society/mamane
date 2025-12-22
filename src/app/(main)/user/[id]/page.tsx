@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera, FileText, ChevronDown, ChevronUp, Bookmark } from "lucide-react";
+import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera, FileText, ChevronDown, ChevronUp, Bookmark, Bell, BellOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -32,6 +32,7 @@ interface Profile {
   age_group: string | null;
   gender: string | null;
   interests: string | null;
+  email_notifications: boolean;
 }
 
 interface UserTrivia {
@@ -65,6 +66,8 @@ export default function UserProfilePage() {
   const [showTrivia, setShowTrivia] = useState(false);
   const [userFavorites, setUserFavorites] = useState<FavoriteTrivia[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [isSavingNotification, setIsSavingNotification] = useState(false);
 
   // 編集用state
   const [ageGroup, setAgeGroup] = useState("");
@@ -97,6 +100,7 @@ export default function UserProfilePage() {
       setAgeGroup(profile.age_group || "");
       setGender(profile.gender || "");
       setInterests(profile.interests || "");
+      setEmailNotifications(profile.email_notifications !== false);
 
       // ユーザーの投稿を取得
       const { data: triviaData } = await supabase
@@ -257,6 +261,28 @@ export default function UserProfilePage() {
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
+  };
+
+  const handleToggleNotification = async () => {
+    setIsSavingNotification(true);
+    const supabase = createClient();
+    const newValue = !emailNotifications;
+
+    const { error } = await (supabase
+      .from("profiles") as any)
+      .update({ email_notifications: newValue })
+      .eq("id", userId);
+
+    if (error) {
+      setError("通知設定の保存に失敗しました");
+    } else {
+      setEmailNotifications(newValue);
+      setProfile({
+        ...profile!,
+        email_notifications: newValue,
+      });
+    }
+    setIsSavingNotification(false);
   };
 
   const isOwner = currentUserId === userId;
@@ -478,6 +504,49 @@ export default function UserProfilePage() {
                     </button>
                   )}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* 通知設定（自分のマイページのみ表示） */}
+          {isOwner && (
+            <div className="flex items-start gap-4">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${emailNotifications ? "bg-blue-100" : "bg-gray-100"}`}>
+                {emailNotifications ? (
+                  <Bell className="w-5 h-5 text-blue-500" />
+                ) : (
+                  <BellOff className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-500 mb-1">メール通知</label>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleToggleNotification}
+                    disabled={isSavingNotification}
+                    className={`
+                      relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+                      ${emailNotifications ? "bg-blue-500" : "bg-gray-300"}
+                      ${isSavingNotification ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                    `}
+                  >
+                    <span
+                      className={`
+                        inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                        ${emailNotifications ? "translate-x-6" : "translate-x-1"}
+                      `}
+                    />
+                  </button>
+                  <span className="text-sm text-gray-600">
+                    {emailNotifications ? "オン" : "オフ"}
+                  </span>
+                  {isSavingNotification && (
+                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                  )}
+                </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  ラッシャーやお気に入りされた時にメールで通知します
+                </p>
               </div>
             </div>
           )}
