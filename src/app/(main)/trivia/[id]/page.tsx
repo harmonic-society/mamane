@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { CategoryBadge } from "@/components/category/CategoryBadge";
 import { HeeButton } from "@/components/trivia/HeeButton";
+import { FavoriteButton } from "@/components/trivia/FavoriteButton";
 import { CommentForm } from "@/components/comment/CommentForm";
 import { CommentList } from "@/components/comment/CommentList";
 import { formatDistanceToNow } from "date-fns";
@@ -56,8 +57,9 @@ export default async function TriviaDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // ユーザーがリアクション済みか確認
+  // ユーザーがリアクション済み・お気に入り済みか確認
   let hasReacted = false;
+  let hasFavorited = false;
   if (user) {
     const { data: reaction } = await supabase
       .from("hee_reactions")
@@ -66,6 +68,14 @@ export default async function TriviaDetailPage({ params }: PageProps) {
       .eq("user_id", user.id)
       .single();
     hasReacted = !!reaction;
+
+    const { data: favorite } = await supabase
+      .from("favorites")
+      .select("id")
+      .eq("trivia_id", params.id)
+      .eq("user_id", user.id)
+      .single();
+    hasFavorited = !!favorite;
   }
 
   // コメントを取得
@@ -131,14 +141,19 @@ export default async function TriviaDetailPage({ params }: PageProps) {
           </p>
         </div>
 
-        {/* へぇボタン（中央配置） */}
-        <div className="flex justify-center mb-8 py-6 border-y border-gray-100">
+        {/* へぇボタンとお気に入りボタン（中央配置） */}
+        <div className="flex justify-center items-center gap-4 mb-8 py-6 border-y border-gray-100">
           <HeeButton
             triviaId={trivia.id}
             initialCount={trivia.hee_count}
             hasReacted={hasReacted}
             userId={user?.id}
             authorId={profile.id}
+          />
+          <FavoriteButton
+            triviaId={trivia.id}
+            initialFavorited={hasFavorited}
+            userId={user?.id}
           />
         </div>
 

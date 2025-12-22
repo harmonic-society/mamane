@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera, FileText, ChevronDown, ChevronUp, Bookmark } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -41,6 +41,13 @@ interface UserTrivia {
   created_at: string;
 }
 
+interface FavoriteTrivia {
+  id: string;
+  title: string;
+  hee_count: number;
+  created_at: string;
+}
+
 export default function UserProfilePage() {
   const router = useRouter();
   const params = useParams();
@@ -56,6 +63,8 @@ export default function UserProfilePage() {
   const [error, setError] = useState("");
   const [userTrivia, setUserTrivia] = useState<UserTrivia[]>([]);
   const [showTrivia, setShowTrivia] = useState(false);
+  const [userFavorites, setUserFavorites] = useState<FavoriteTrivia[]>([]);
+  const [showFavorites, setShowFavorites] = useState(false);
 
   // 編集用state
   const [ageGroup, setAgeGroup] = useState("");
@@ -98,6 +107,36 @@ export default function UserProfilePage() {
 
       if (triviaData) {
         setUserTrivia(triviaData as UserTrivia[]);
+      }
+
+      // ユーザーのお気に入りを取得（自分のマイページの場合のみ）
+      if (user?.id === userId) {
+        const { data: favoritesData } = await supabase
+          .from("favorites")
+          .select(`
+            id,
+            created_at,
+            trivia:trivia_id (
+              id,
+              title,
+              hee_count,
+              created_at
+            )
+          `)
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false });
+
+        if (favoritesData) {
+          const favorites = favoritesData
+            .filter((item: any) => item.trivia)
+            .map((item: any) => ({
+              id: item.trivia.id,
+              title: item.trivia.title,
+              hee_count: item.trivia.hee_count,
+              created_at: item.trivia.created_at,
+            }));
+          setUserFavorites(favorites);
+        }
       }
 
       setIsLoading(false);
@@ -409,6 +448,39 @@ export default function UserProfilePage() {
               </div>
             </div>
           </div>
+
+          {/* お気に入り（自分のマイページのみ表示） */}
+          {isOwner && (
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Bookmark className="w-5 h-5 text-yellow-500" />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-500 mb-1">お気に入り</label>
+                <div className="flex items-center gap-3">
+                  <p className="text-gray-800 font-medium text-lg">{userFavorites.length}件</p>
+                  {userFavorites.length > 0 && (
+                    <button
+                      onClick={() => setShowFavorites(!showFavorites)}
+                      className="flex items-center gap-1 px-3 py-1 text-sm text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-full transition-colors"
+                    >
+                      {showFavorites ? (
+                        <>
+                          <ChevronUp className="w-4 h-4" />
+                          閉じる
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-4 h-4" />
+                          見る
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ボタン */}
@@ -477,6 +549,44 @@ export default function UserProfilePage() {
                 key={trivia.id}
                 href={`/trivia/${trivia.id}`}
                 className="block p-4 rounded-lg border border-gray-100 hover:border-pink-200 hover:bg-pink-50/50 transition-colors"
+              >
+                <h3 className="font-medium text-gray-800 mb-2 line-clamp-2">
+                  {trivia.title}
+                </h3>
+                <div className="flex items-center justify-between text-sm text-gray-400">
+                  <span>
+                    {formatDistanceToNow(new Date(trivia.created_at), {
+                      addSuffix: true,
+                      locale: ja,
+                    })}
+                  </span>
+                  <span className="text-pink-500">
+                    🐬 {trivia.hee_count}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* お気に入り一覧 */}
+      {showFavorites && userFavorites.length > 0 && (
+        <div className="mt-8 bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <Bookmark className="w-5 h-5 text-yellow-500" />
+            お気に入り
+            <span className="text-sm font-normal text-gray-400">
+              ({userFavorites.length}件)
+            </span>
+          </h2>
+
+          <div className="space-y-3">
+            {userFavorites.map((trivia) => (
+              <Link
+                key={trivia.id}
+                href={`/trivia/${trivia.id}`}
+                className="block p-4 rounded-lg border border-gray-100 hover:border-yellow-200 hover:bg-yellow-50/50 transition-colors"
               >
                 <h3 className="font-medium text-gray-800 mb-2 line-clamp-2">
                   {trivia.title}
