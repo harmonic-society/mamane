@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { DeleteButton } from "@/components/trivia/DeleteButton";
+import { ShareButtons } from "@/components/trivia/ShareButtons";
 import type { CommentWithAuthor } from "@/types/database";
 
 interface PageProps {
@@ -142,19 +143,22 @@ export default async function TriviaDetailPage({ params }: PageProps) {
         </div>
 
         {/* へぇボタンとお気に入りボタン（中央配置） */}
-        <div className="flex justify-center items-center gap-4 mb-8 py-6 border-y border-gray-100">
-          <HeeButton
-            triviaId={trivia.id}
-            initialCount={trivia.hee_count}
-            hasReacted={hasReacted}
-            userId={user?.id}
-            authorId={profile.id}
-          />
-          <FavoriteButton
-            triviaId={trivia.id}
-            initialFavorited={hasFavorited}
-            userId={user?.id}
-          />
+        <div className="flex flex-col items-center gap-4 mb-8 py-6 border-y border-gray-100">
+          <div className="flex items-center gap-4">
+            <HeeButton
+              triviaId={trivia.id}
+              initialCount={trivia.hee_count}
+              hasReacted={hasReacted}
+              userId={user?.id}
+              authorId={profile.id}
+            />
+            <FavoriteButton
+              triviaId={trivia.id}
+              initialFavorited={hasFavorited}
+              userId={user?.id}
+            />
+          </div>
+          <ShareButtons triviaId={trivia.id} triviaTitle={trivia.title} />
         </div>
 
         {/* 投稿者情報 */}
