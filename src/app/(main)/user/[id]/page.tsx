@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera, FileText } from "lucide-react";
+import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera, FileText, ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -55,6 +55,7 @@ export default function UserProfilePage() {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [error, setError] = useState("");
   const [userTrivia, setUserTrivia] = useState<UserTrivia[]>([]);
+  const [showTrivia, setShowTrivia] = useState(false);
 
   // 編集用state
   const [ageGroup, setAgeGroup] = useState("");
@@ -377,6 +378,37 @@ export default function UserProfilePage() {
               )}
             </div>
           </div>
+
+          {/* 投稿数 */}
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <FileText className="w-5 h-5 text-pink-500" />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-500 mb-1">投稿数</label>
+              <div className="flex items-center gap-3">
+                <p className="text-gray-800 font-medium text-lg">{userTrivia.length}件</p>
+                {userTrivia.length > 0 && (
+                  <button
+                    onClick={() => setShowTrivia(!showTrivia)}
+                    className="flex items-center gap-1 px-3 py-1 text-sm text-pink-500 hover:text-pink-600 hover:bg-pink-50 rounded-full transition-colors"
+                  >
+                    {showTrivia ? (
+                      <>
+                        <ChevronUp className="w-4 h-4" />
+                        閉じる
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-4 h-4" />
+                        見る
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ボタン */}
@@ -429,21 +461,16 @@ export default function UserProfilePage() {
       </div>
 
       {/* 投稿した豆知識一覧 */}
-      <div className="mt-8 bg-white rounded-2xl shadow-xl p-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          <FileText className="w-5 h-5 text-pink-500" />
-          投稿した豆知識
-          <span className="text-sm font-normal text-gray-400">
-            ({userTrivia.length})
-          </span>
-        </h2>
+      {showTrivia && userTrivia.length > 0 && (
+        <div className="mt-8 bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-pink-500" />
+            投稿した豆知識
+            <span className="text-sm font-normal text-gray-400">
+              ({userTrivia.length}件)
+            </span>
+          </h2>
 
-        {userTrivia.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p>まだ投稿がありません</p>
-          </div>
-        ) : (
           <div className="space-y-3">
             {userTrivia.map((trivia) => (
               <Link
@@ -468,8 +495,8 @@ export default function UserProfilePage() {
               </Link>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
