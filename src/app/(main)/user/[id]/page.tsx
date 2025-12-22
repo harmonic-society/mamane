@@ -3,8 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera } from "lucide-react";
+import { User, Calendar, Users, Heart, LogOut, Loader2, Save, Camera, FileText } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { ja } from "date-fns/locale";
 
 const AGE_GROUPS = [
   "10代",
@@ -31,6 +34,13 @@ interface Profile {
   interests: string | null;
 }
 
+interface UserTrivia {
+  id: string;
+  title: string;
+  hee_count: number;
+  created_at: string;
+}
+
 export default function UserProfilePage() {
   const router = useRouter();
   const params = useParams();
@@ -44,6 +54,7 @@ export default function UserProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [error, setError] = useState("");
+  const [userTrivia, setUserTrivia] = useState<UserTrivia[]>([]);
 
   // 編集用state
   const [ageGroup, setAgeGroup] = useState("");
@@ -76,6 +87,18 @@ export default function UserProfilePage() {
       setAgeGroup(profile.age_group || "");
       setGender(profile.gender || "");
       setInterests(profile.interests || "");
+
+      // ユーザーの投稿を取得
+      const { data: triviaData } = await supabase
+        .from("trivia")
+        .select("id, title, hee_count, created_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (triviaData) {
+        setUserTrivia(triviaData as UserTrivia[]);
+      }
+
       setIsLoading(false);
     };
 
@@ -401,6 +424,49 @@ export default function UserProfilePage() {
               <LogOut className="w-5 h-5" />
               ログアウト
             </button>
+          </div>
+        )}
+      </div>
+
+      {/* 投稿した豆知識一覧 */}
+      <div className="mt-8 bg-white rounded-2xl shadow-xl p-8">
+        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          <FileText className="w-5 h-5 text-pink-500" />
+          投稿した豆知識
+          <span className="text-sm font-normal text-gray-400">
+            ({userTrivia.length})
+          </span>
+        </h2>
+
+        {userTrivia.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p>まだ投稿がありません</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {userTrivia.map((trivia) => (
+              <Link
+                key={trivia.id}
+                href={`/trivia/${trivia.id}`}
+                className="block p-4 rounded-lg border border-gray-100 hover:border-pink-200 hover:bg-pink-50/50 transition-colors"
+              >
+                <h3 className="font-medium text-gray-800 mb-2 line-clamp-2">
+                  {trivia.title}
+                </h3>
+                <div className="flex items-center justify-between text-sm text-gray-400">
+                  <span>
+                    {formatDistanceToNow(new Date(trivia.created_at), {
+                      addSuffix: true,
+                      locale: ja,
+                    })}
+                  </span>
+                  <span className="text-pink-500">
+                    🐬 {trivia.hee_count}
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </div>
