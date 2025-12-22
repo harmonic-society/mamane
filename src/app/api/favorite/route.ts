@@ -37,6 +37,17 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ favorited: false });
   } else {
+    // 豆知識の情報を取得
+    const { data: trivia, error: triviaError } = await supabase
+      .from("trivia")
+      .select("id, title, user_id")
+      .eq("id", triviaId)
+      .single() as { data: { id: string; title: string; user_id: string } | null; error: any };
+
+    if (triviaError || !trivia) {
+      return NextResponse.json({ error: "Trivia not found" }, { status: 404 });
+    }
+
     // お気に入りに追加
     const { error } = await supabase
       .from("favorites")
@@ -44,6 +55,34 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // 自分の投稿でなければ通知を送信
+    if (trivia.user_id !== user.id) {
+      // お気に入りしたユーザーのプロフィールを取得
+      const { data: actorProfile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", user.id)
+        .single() as { data: { username: string } | null; error: any };
+
+      // 通知を送信（非同期、エラーでも処理を継続）
+      try {
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mamane.vercel.app";
+        await fetch(`${siteUrl}/api/notify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "favorite",
+            triviaId: trivia.id,
+            triviaTitle: trivia.title,
+            recipientUserId: trivia.user_id,
+            actorUsername: actorProfile?.username || "ユーザー",
+          }),
+        });
+      } catch (notifyError) {
+        console.error("Failed to send notification:", notifyError);
+      }
     }
 
     return NextResponse.json({ favorited: true });

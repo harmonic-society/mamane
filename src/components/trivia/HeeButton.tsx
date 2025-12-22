@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 interface HeeButtonProps {
@@ -49,14 +48,19 @@ export function HeeButton({
     // キラキラ星エフェクト
     setStars([...Array(15)].map((_, i) => i));
 
-    const supabase = createClient();
+    try {
+      const response = await fetch("/api/hee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ triviaId }),
+      });
 
-    const { error } = await supabase.from("hee_reactions").insert({
-      trivia_id: triviaId,
-      user_id: userId,
-    } as any);
-
-    if (error) {
+      if (!response.ok) {
+        console.error("ラッシャー登録エラー");
+        setCount((prev) => prev - 1);
+        setIsReacted(false);
+      }
+    } catch (error) {
       console.error("ラッシャー登録エラー:", error);
       setCount((prev) => prev - 1);
       setIsReacted(false);
