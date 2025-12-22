@@ -69,21 +69,14 @@ export default async function HomePage() {
     category_color: item.categories?.color || null,
   }));
 
-  // ユーザーのリアクションとお気に入りを取得
+  // ユーザーのリアクションを取得
   let userReactions: string[] = [];
-  let userFavorites: string[] = [];
   if (user) {
     const { data: reactions } = await supabase
       .from("hee_reactions")
       .select("trivia_id")
       .eq("user_id", user.id) as { data: any[] | null };
     userReactions = (reactions || []).map((r) => r.trivia_id);
-
-    const { data: favorites } = await supabase
-      .from("favorites")
-      .select("trivia_id")
-      .eq("user_id", user.id) as { data: any[] | null };
-    userFavorites = (favorites || []).map((f) => f.trivia_id);
   }
 
   return (
@@ -148,7 +141,6 @@ export default async function HomePage() {
         <TriviaList
           initialTriviaList={triviaList}
           userReactions={userReactions}
-          userFavorites={userFavorites}
           userId={user?.id}
         />
       </section>

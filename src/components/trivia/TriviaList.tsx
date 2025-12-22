@@ -8,7 +8,6 @@ import type { TriviaWithDetails } from "@/types/database";
 interface TriviaListProps {
   initialTriviaList: TriviaWithDetails[];
   userReactions: string[];
-  userFavorites?: string[];
   userId?: string;
   showRank?: boolean;
 }
@@ -16,7 +15,6 @@ interface TriviaListProps {
 export function TriviaList({
   initialTriviaList,
   userReactions,
-  userFavorites = [],
   userId,
   showRank = false,
 }: TriviaListProps) {
@@ -81,7 +79,6 @@ export function TriviaList({
             key={trivia.id}
             trivia={trivia}
             hasReacted={userReactions.includes(trivia.id)}
-            hasFavorited={userFavorites.includes(trivia.id)}
             userId={userId}
             rank={showRank ? index + 1 : undefined}
           />

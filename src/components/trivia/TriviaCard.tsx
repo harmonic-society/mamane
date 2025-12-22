@@ -5,7 +5,6 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { CategoryBadge } from "@/components/category/CategoryBadge";
 import { HeeButton } from "./HeeButton";
-import { FavoriteButton } from "./FavoriteButton";
 import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
 import { MessageCircle } from "lucide-react";
@@ -14,12 +13,11 @@ import type { TriviaWithDetails } from "@/types/database";
 interface TriviaCardProps {
   trivia: TriviaWithDetails;
   hasReacted: boolean;
-  hasFavorited?: boolean;
   userId?: string;
   rank?: number;
 }
 
-export function TriviaCard({ trivia, hasReacted, hasFavorited = false, userId, rank }: TriviaCardProps) {
+export function TriviaCard({ trivia, hasReacted, userId, rank }: TriviaCardProps) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -119,11 +117,6 @@ export function TriviaCard({ trivia, hasReacted, hasFavorited = false, userId, r
             hasReacted={hasReacted}
             userId={userId}
             authorId={trivia.author_id}
-          />
-          <FavoriteButton
-            triviaId={trivia.id}
-            initialFavorited={hasFavorited}
-            userId={userId}
           />
         </div>
       </div>
