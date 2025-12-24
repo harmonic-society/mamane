@@ -14,12 +14,18 @@ export function Footer() {
           </Link>
 
           {/* Links */}
-          <nav className="flex items-center gap-6 text-sm text-gray-500">
+          <nav className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-gray-500">
             <Link href="/ranking" className="hover:text-pink-500 transition-colors">
               ランキング
             </Link>
             <Link href="/search" className="hover:text-pink-500 transition-colors">
               検索
+            </Link>
+            <Link href="/terms" className="hover:text-pink-500 transition-colors">
+              利用規約
+            </Link>
+            <Link href="/privacy" className="hover:text-pink-500 transition-colors">
+              プライバシーポリシー
             </Link>
           </nav>
 
