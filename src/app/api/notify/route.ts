@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-type NotificationType = "hee" | "favorite" | "new_post";
+type NotificationType = "hee" | "favorite" | "comment" | "new_post";
 
 interface NotifyRequest {
   type: NotificationType;
@@ -14,21 +14,39 @@ interface NotifyRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
-    const { type, triviaId, triviaTitle, recipientUserId, actorUsername }: NotifyRequest = await request.json();
+    // 環境変数チェック
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("SUPABASE_SERVICE_ROLE_KEY is not set");
+      return NextResponse.json({ error: "Server configuration error: missing SUPABASE_SERVICE_ROLE_KEY" }, { status: 500 });
+    }
+    if (!process.env.RESEND_API_KEY) {
+      console.error("RESEND_API_KEY is not set");
+      return NextResponse.json({ error: "Server configuration error: missing RESEND_API_KEY" }, { status: 500 });
+    }
 
-    // 受信者のメールアドレスを取得
-    const { data: userData, error: userError } = await supabase.auth.admin.getUserById(recipientUserId);
+    // Service Role Keyを使用してAdmin権限でSupabaseに接続
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+
+    const { type, triviaId, triviaTitle, recipientUserId, actorUsername }: NotifyRequest = await request.json();
+    console.log("Notify request:", { type, triviaId, triviaTitle, recipientUserId, actorUsername });
+
+    // 受信者のメールアドレスを取得（Admin APIを使用）
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(recipientUserId);
 
     if (userError || !userData?.user?.email) {
       console.error("Failed to get user email:", userError);
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found", details: userError?.message }, { status: 404 });
     }
 
     const recipientEmail = userData.user.email;
+    console.log("Sending email to:", recipientEmail);
 
     // 受信者のプロフィールを取得（通知設定も含む）
-    const { data: profile } = await supabase
+    const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("username, email_notifications")
       .eq("id", recipientUserId)
@@ -48,43 +66,57 @@ export async function POST(request: NextRequest) {
 
     switch (type) {
       case "hee":
-        subject = `${actorUsername}さんがあなたの豆知識にラッシャー！しました`;
+        subject = `🐬 ${actorUsername}さんがあなたの豆知識にラッシャー！しました`;
         htmlContent = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #EC4899;">mamane - 豆知識共有サイト</h2>
+            <h2 style="color: #EC4899;">🐬 rasher - 豆知識共有サイト</h2>
             <p>${recipientName}さん、</p>
             <p><strong>${actorUsername}</strong>さんがあなたの豆知識「<strong>${triviaTitle}</strong>」にラッシャー！しました！</p>
             <p><a href="${triviaUrl}" style="display: inline-block; background: linear-gradient(to right, #F472B6, #EC4899); color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none;">豆知識を見る</a></p>
             <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="color: #888; font-size: 12px;">この通知はmamaneから送信されました。</p>
+            <p style="color: #888; font-size: 12px;">この通知はrasherから送信されました。</p>
           </div>
         `;
         break;
 
       case "favorite":
-        subject = `${actorUsername}さんがあなたの豆知識をお気に入りしました`;
+        subject = `⭐ ${actorUsername}さんがあなたの豆知識をお気に入りしました`;
         htmlContent = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #EC4899;">mamane - 豆知識共有サイト</h2>
+            <h2 style="color: #EC4899;">🐬 rasher - 豆知識共有サイト</h2>
             <p>${recipientName}さん、</p>
             <p><strong>${actorUsername}</strong>さんがあなたの豆知識「<strong>${triviaTitle}</strong>」をお気に入りに追加しました！</p>
             <p><a href="${triviaUrl}" style="display: inline-block; background: linear-gradient(to right, #F472B6, #EC4899); color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none;">豆知識を見る</a></p>
             <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="color: #888; font-size: 12px;">この通知はmamaneから送信されました。</p>
+            <p style="color: #888; font-size: 12px;">この通知はrasherから送信されました。</p>
+          </div>
+        `;
+        break;
+
+      case "comment":
+        subject = `💬 ${actorUsername}さんがあなたの豆知識にコメントしました`;
+        htmlContent = `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #EC4899;">🐬 rasher - 豆知識共有サイト</h2>
+            <p>${recipientName}さん、</p>
+            <p><strong>${actorUsername}</strong>さんがあなたの豆知識「<strong>${triviaTitle}</strong>」にコメントしました！</p>
+            <p><a href="${triviaUrl}" style="display: inline-block; background: linear-gradient(to right, #F472B6, #EC4899); color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none;">コメントを見る</a></p>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+            <p style="color: #888; font-size: 12px;">この通知はrasherから送信されました。</p>
           </div>
         `;
         break;
 
       case "new_post":
-        subject = `新しい豆知識が投稿されました`;
+        subject = `📝 新しい豆知識が投稿されました`;
         htmlContent = `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #EC4899;">mamane - 豆知識共有サイト</h2>
+            <h2 style="color: #EC4899;">🐬 rasher - 豆知識共有サイト</h2>
             <p>${recipientName}さん、</p>
             <p>新しい豆知識「<strong>${triviaTitle}</strong>」が投稿されました！</p>
             <p><a href="${triviaUrl}" style="display: inline-block; background: linear-gradient(to right, #F472B6, #EC4899); color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none;">豆知識を見る</a></p>
             <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="color: #888; font-size: 12px;">この通知はmamaneから送信されました。</p>
+            <p style="color: #888; font-size: 12px;">この通知はrasherから送信されました。</p>
           </div>
         `;
         break;
@@ -96,7 +128,7 @@ export async function POST(request: NextRequest) {
     // メール送信
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
-      from: "mamane <noreply@mamane.app>",
+      from: "rasher <onboarding@resend.dev>",
       to: recipientEmail,
       subject,
       html: htmlContent,
@@ -104,9 +136,10 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Failed to send email:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message, details: error }, { status: 500 });
     }
 
+    console.log("Email sent successfully:", data?.id);
     return NextResponse.json({ success: true, messageId: data?.id });
   } catch (error) {
     console.error("Notification error:", error);
