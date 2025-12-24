@@ -10,7 +10,7 @@ export function Footer() {
             <div className="w-8 h-8 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-sm">
               <span className="text-lg">🐬</span>
             </div>
-            <span className="font-bold text-pink-600">rasher</span>
+            <span className="font-bold text-pink-600">Rasher</span>
           </Link>
 
           {/* Links */}
@@ -31,7 +31,7 @@ export function Footer() {
 
           {/* Copyright */}
           <p className="text-sm text-pink-400">
-            &copy; {new Date().getFullYear()} rasher
+            &copy; {new Date().getFullYear()} Rasher
           </p>
         </div>
       </div>

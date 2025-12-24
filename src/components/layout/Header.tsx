@@ -27,7 +27,7 @@ export function Header({ user }: HeaderProps) {
               <span className="text-2xl">🐬</span>
             </motion.div>
             <span className="text-xl font-bold bg-gradient-to-r from-pink-500 to-pink-600 bg-clip-text text-transparent">
-              rasher
+              Rasher
             </span>
           </Link>
 
