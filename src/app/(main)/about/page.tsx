@@ -1,4 +1,5 @@
 import { HelpCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -9,12 +10,16 @@ export default function AboutPage() {
       </h1>
 
       <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
-        {/* イルカマスコット */}
+        {/* ラッシャーくんマスコット */}
         <div className="text-center">
           <div className="inline-block">
-            <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-lg mx-auto">
-              <span className="text-5xl">🐬</span>
-            </div>
+            <Image
+              src="/Gemini_Generated_Image_5305925305925305.png"
+              alt="ラッシャーくん"
+              width={150}
+              height={150}
+              className="mx-auto rounded-2xl shadow-lg"
+            />
           </div>
         </div>
 
