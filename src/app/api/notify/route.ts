@@ -58,8 +58,17 @@ export async function POST(request: NextRequest) {
     }
 
     const recipientName = profile?.username || "ユーザー";
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mamane.vercel.app";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rasher.jp";
     const triviaUrl = `${siteUrl}/trivia/${triviaId}`;
+    const unsubscribeUrl = `${siteUrl}/user/${recipientUserId}?tab=settings`;
+
+    const footerHtml = `
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+      <p style="color: #888; font-size: 12px;">
+        この通知は <a href="${siteUrl}" style="color: #EC4899;">rasher</a> から送信されました。<br />
+        <a href="${unsubscribeUrl}" style="color: #888;">通知設定を変更する</a>
+      </p>
+    `;
 
     let subject = "";
     let htmlContent = "";
@@ -73,8 +82,7 @@ export async function POST(request: NextRequest) {
             <p>${recipientName}さん、</p>
             <p><strong>${actorUsername}</strong>さんがあなたの豆知識「<strong>${triviaTitle}</strong>」にラッシャー！しました！</p>
             <p><a href="${triviaUrl}" style="display: inline-block; background: linear-gradient(to right, #F472B6, #EC4899); color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none;">豆知識を見る</a></p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="color: #888; font-size: 12px;">この通知はrasherから送信されました。</p>
+            ${footerHtml}
           </div>
         `;
         break;
@@ -87,8 +95,7 @@ export async function POST(request: NextRequest) {
             <p>${recipientName}さん、</p>
             <p><strong>${actorUsername}</strong>さんがあなたの豆知識「<strong>${triviaTitle}</strong>」をお気に入りに追加しました！</p>
             <p><a href="${triviaUrl}" style="display: inline-block; background: linear-gradient(to right, #F472B6, #EC4899); color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none;">豆知識を見る</a></p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="color: #888; font-size: 12px;">この通知はrasherから送信されました。</p>
+            ${footerHtml}
           </div>
         `;
         break;
@@ -101,8 +108,7 @@ export async function POST(request: NextRequest) {
             <p>${recipientName}さん、</p>
             <p><strong>${actorUsername}</strong>さんがあなたの豆知識「<strong>${triviaTitle}</strong>」にコメントしました！</p>
             <p><a href="${triviaUrl}" style="display: inline-block; background: linear-gradient(to right, #F472B6, #EC4899); color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none;">コメントを見る</a></p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="color: #888; font-size: 12px;">この通知はrasherから送信されました。</p>
+            ${footerHtml}
           </div>
         `;
         break;
@@ -115,8 +121,7 @@ export async function POST(request: NextRequest) {
             <p>${recipientName}さん、</p>
             <p>新しい豆知識「<strong>${triviaTitle}</strong>」が投稿されました！</p>
             <p><a href="${triviaUrl}" style="display: inline-block; background: linear-gradient(to right, #F472B6, #EC4899); color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none;">豆知識を見る</a></p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="color: #888; font-size: 12px;">この通知はrasherから送信されました。</p>
+            ${footerHtml}
           </div>
         `;
         break;
