@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "mamane - 豆知識投稿サイト",
+  title: "rasher - 豆知識共有サイト",
   description: "面白い豆知識を投稿・共有しよう！「へぇ〜」と言いたくなる雑学がいっぱい",
 };
 
