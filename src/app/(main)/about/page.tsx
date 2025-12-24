@@ -20,9 +20,9 @@ export default function AboutPage() {
 
         {/* 説明セクション */}
         <section>
-          <h2 className="text-xl font-bold text-pink-600 mb-4">mamaneへようこそ！</h2>
+          <h2 className="text-xl font-bold text-pink-600 mb-4">Rasherへようこそ！</h2>
           <p className="text-gray-600 leading-relaxed">
-            mamaneは、みんなで面白い豆知識を共有するサイトです。
+            Rasherは、みんなで面白い豆知識を共有するサイトです。
             「へぇ〜」と言いたくなるような豆知識を投稿して、みんなと楽しみましょう！
           </p>
         </section>
@@ -31,7 +31,7 @@ export default function AboutPage() {
         <section>
           <h2 className="text-xl font-bold text-pink-600 mb-4">「ラッシャー！」って何？</h2>
           <p className="text-gray-600 leading-relaxed mb-4">
-            「ラッシャー！」は、mamaneオリジナルの応援・共感ボタンだよ♩いいね＝ラッシャー！ってこと。
+            「ラッシャー！」は、Rasherオリジナルの応援・共感ボタンだよ♩いいね＝ラッシャー！ってこと。
             面白い豆知識を見つけたら、「ラッシャー！」ボタンを押して投稿者を応援してね！
             みんなでいっぱいラッシャー！しようね❤️
           </p>
