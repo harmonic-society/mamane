@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     // メール送信
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
-      from: "rasher <onboarding@resend.dev>",
+      from: process.env.RESEND_FROM_EMAIL || "rasher <noreply@rasher.jp>",
       to: recipientEmail,
       subject,
       html: htmlContent,
