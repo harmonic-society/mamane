@@ -47,6 +47,29 @@ export async function POST(request: Request) {
       );
     }
 
+    // BANした場合、ユーザーの投稿とコメントを削除
+    if (isBanned) {
+      // コメントを削除
+      const { error: commentDeleteError } = await supabase
+        .from("comments")
+        .delete()
+        .eq("user_id", userId);
+
+      if (commentDeleteError) {
+        console.error("コメント削除エラー:", commentDeleteError);
+      }
+
+      // 投稿を削除（関連するhee_reactionsとfavoritesはCASCADEで削除される）
+      const { error: triviaDeleteError } = await supabase
+        .from("trivia")
+        .delete()
+        .eq("user_id", userId);
+
+      if (triviaDeleteError) {
+        console.error("投稿削除エラー:", triviaDeleteError);
+      }
+    }
+
     return NextResponse.json({ success: true, isBanned });
   } catch (error) {
     console.error("API エラー:", error);

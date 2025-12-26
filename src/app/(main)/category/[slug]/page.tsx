@@ -57,7 +57,6 @@ export default async function CategoryPage({ params }: PageProps) {
     `
     )
     .eq("category_id", category.id)
-    .not("profiles.is_banned", "eq", true)
     .order("created_at", { ascending: false })
     .limit(20);
 

@@ -52,7 +52,6 @@ export default async function TriviaDetailPage({ params }: PageProps) {
     `
     )
     .eq("id", params.id)
-    .not("profiles.is_banned", "eq", true)
     .single() as { data: any };
 
   if (!trivia) {
@@ -104,7 +103,6 @@ export default async function TriviaDetailPage({ params }: PageProps) {
       )
     `)
     .eq("trivia_id", params.id)
-    .not("profiles.is_banned", "eq", true)
     .order("created_at", { ascending: true });
 
   const comments: CommentWithAuthor[] = (commentsData || []).map((item: any) => ({

@@ -39,7 +39,6 @@ export default async function RankingPage() {
       )
     `
     )
-    .not("profiles.is_banned", "eq", true)
     .order("hee_count", { ascending: false })
     .limit(20);
 

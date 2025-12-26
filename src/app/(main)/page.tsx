@@ -48,7 +48,6 @@ export default async function HomePage() {
       )
     `
     )
-    .not("profiles.is_banned", "eq", true)
     .order("created_at", { ascending: false })
     .limit(20);
 
