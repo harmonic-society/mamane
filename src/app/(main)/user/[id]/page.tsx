@@ -33,6 +33,7 @@ interface Profile {
   gender: string | null;
   interests: string | null;
   email_notifications: boolean;
+  is_banned: boolean | null;
 }
 
 interface UserTrivia {
@@ -96,6 +97,13 @@ export default function UserProfilePage() {
       }
 
       const profile = profileData as Profile;
+
+      // BANされたユーザーのプロフィールはアクセス不可（自分自身以外）
+      if (profile.is_banned && user?.id !== userId) {
+        setError("このユーザーのプロフィールは表示できません");
+        setIsLoading(false);
+        return;
+      }
       setProfile(profile);
       setAgeGroup(profile.age_group || "");
       setGender(profile.gender || "");

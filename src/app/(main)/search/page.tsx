@@ -48,6 +48,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
       `
       )
       .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+      .not("profiles.is_banned", "eq", true)
       .order("hee_count", { ascending: false })
       .limit(20);
 

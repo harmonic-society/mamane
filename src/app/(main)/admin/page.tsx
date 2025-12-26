@@ -191,12 +191,25 @@ export default function AdminPage() {
   const handleBanUser = async (userId: string, currentBanned: boolean) => {
     if (!confirm(currentBanned ? "このユーザーのBANを解除しますか？" : "このユーザーをBANしますか？")) return;
 
-    const supabase = createClient();
-    await (supabase.from("profiles") as any)
-      .update({ is_banned: !currentBanned })
-      .eq("id", userId);
+    try {
+      const response = await fetch("/api/admin/ban", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, isBanned: !currentBanned }),
+      });
 
-    fetchUsers();
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(`エラー: ${result.error}${result.details ? `\n詳細: ${result.details}` : ""}`);
+        return;
+      }
+
+      fetchUsers();
+    } catch (error) {
+      console.error("BAN処理エラー:", error);
+      alert("BAN処理に失敗しました");
+    }
   };
 
   const handleDeleteTrivia = async (triviaId: string) => {
