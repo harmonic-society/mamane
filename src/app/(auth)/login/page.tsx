@@ -39,14 +39,16 @@ function LoginForm() {
 
     // profilesを確認（BANチェック含む）
     if (data.user) {
-      const { data: profile } = await supabase
+      const profileResult = await supabase
         .from("profiles")
         .select("id, is_banned")
         .eq("id", data.user.id)
-        .single() as { data: { id: string; is_banned: boolean } | null };
+        .single();
+
+      const profile = profileResult.data as { id: string; is_banned: boolean | null } | null;
 
       // BANされている場合はログアウトしてエラー表示
-      if (profile?.is_banned) {
+      if (profile?.is_banned === true) {
         await supabase.auth.signOut();
         setError("このアカウントは利用停止されています。");
         setIsLoading(false);
