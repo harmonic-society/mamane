@@ -58,10 +58,7 @@ export default function AboutPage() {
 
         {/* 使い方 */}
         <section>
-          <h2 className="text-xl font-bold text-pink-600 mb-4 flex items-center gap-2">
-            <span className="text-2xl">🐬</span>
-            使い方
-          </h2>
+          <h2 className="text-xl font-bold text-pink-600 mb-4">使い方</h2>
           <div className="space-y-4">
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
