@@ -37,13 +37,21 @@ function LoginForm() {
       return;
     }
 
-    // profilesに存在しない場合は作成
+    // profilesを確認（BANチェック含む）
     if (data.user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("id")
+        .select("id, is_banned")
         .eq("id", data.user.id)
-        .single();
+        .single() as { data: { id: string; is_banned: boolean } | null };
+
+      // BANされている場合はログアウトしてエラー表示
+      if (profile?.is_banned) {
+        await supabase.auth.signOut();
+        setError("このアカウントは利用停止されています。");
+        setIsLoading(false);
+        return;
+      }
 
       if (!profile) {
         const username = data.user.user_metadata?.username || `user_${data.user.id.slice(0, 8)}`;
