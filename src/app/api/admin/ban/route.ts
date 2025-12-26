@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -30,17 +31,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "無効なリクエスト" }, { status: 400 });
     }
 
+    // 管理者クライアント（RLSバイパス）を使用
+    const adminSupabase = createAdminClient();
+
     // 対象ユーザーのBAN状態を更新
-    const { error: updateError } = await supabase
+    const { error: updateError } = await adminSupabase
       .from("profiles")
-      .update({ is_banned: isBanned } as any)
+      .update({ is_banned: isBanned })
       .eq("id", userId);
 
     if (updateError) {
       console.error("BAN更新エラー:", updateError);
       return NextResponse.json(
         {
-          error: "BAN状態の更新に失敗しました。SupabaseのRLSポリシーを確認してください。",
+          error: "BAN状態の更新に失敗しました",
           details: updateError.message
         },
         { status: 500 }
@@ -50,7 +54,7 @@ export async function POST(request: Request) {
     // BANした場合、ユーザーの投稿とコメントを削除
     if (isBanned) {
       // コメントを削除
-      const { error: commentDeleteError } = await supabase
+      const { error: commentDeleteError } = await adminSupabase
         .from("comments")
         .delete()
         .eq("user_id", userId);
@@ -60,7 +64,7 @@ export async function POST(request: Request) {
       }
 
       // 投稿を削除（関連するhee_reactionsとfavoritesはCASCADEで削除される）
-      const { error: triviaDeleteError } = await supabase
+      const { error: triviaDeleteError } = await adminSupabase
         .from("trivia")
         .delete()
         .eq("user_id", userId);
