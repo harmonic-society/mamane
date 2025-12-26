@@ -58,9 +58,10 @@ export default async function TriviaDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // ユーザーがリアクション済み・お気に入り済みか確認
+  // ユーザーがリアクション済み・お気に入り済みか確認、管理者かどうかも確認
   let hasReacted = false;
   let hasFavorited = false;
+  let isAdmin = false;
   if (user) {
     const { data: reaction } = await supabase
       .from("hee_reactions")
@@ -77,6 +78,14 @@ export default async function TriviaDetailPage({ params }: PageProps) {
       .eq("user_id", user.id)
       .single();
     hasFavorited = !!favorite;
+
+    // 管理者権限を確認
+    const { data: userProfile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single() as { data: { is_admin: boolean } | null };
+    isAdmin = userProfile?.is_admin === true;
   }
 
   // コメントを取得
@@ -193,13 +202,14 @@ export default async function TriviaDetailPage({ params }: PageProps) {
             </div>
           </Link>
 
-          {/* 削除ボタン（投稿者のみ表示） */}
+          {/* 削除ボタン（投稿者または管理者のみ表示） */}
           {user && (
             <div className="mt-4">
               <DeleteButton
                 triviaId={trivia.id}
                 userId={user.id}
                 authorId={profile.id}
+                isAdmin={isAdmin}
               />
             </div>
           )}

@@ -9,15 +9,16 @@ interface DeleteButtonProps {
   triviaId: string;
   userId: string;
   authorId: string;
+  isAdmin?: boolean;
 }
 
-export function DeleteButton({ triviaId, userId, authorId }: DeleteButtonProps) {
+export function DeleteButton({ triviaId, userId, authorId, isAdmin = false }: DeleteButtonProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  // 投稿者以外には表示しない
-  if (userId !== authorId) {
+  // 投稿者か管理者以外には表示しない
+  if (userId !== authorId && !isAdmin) {
     return null;
   }
 
@@ -25,11 +26,14 @@ export function DeleteButton({ triviaId, userId, authorId }: DeleteButtonProps) 
     setIsDeleting(true);
 
     const supabase = createClient();
-    const { error } = await supabase
-      .from("trivia")
-      .delete()
-      .eq("id", triviaId)
-      .eq("user_id", userId);
+
+    // 管理者の場合はuser_idの制約なしで削除
+    let query = supabase.from("trivia").delete().eq("id", triviaId);
+    if (!isAdmin) {
+      query = query.eq("user_id", userId);
+    }
+
+    const { error } = await query;
 
     if (error) {
       console.error("削除エラー:", error);
