@@ -59,13 +59,7 @@ export default function AboutPage() {
         {/* 使い方 */}
         <section>
           <h2 className="text-xl font-bold text-pink-600 mb-4 flex items-center gap-2">
-            <Image
-              src="/スクリーンショット 2025-12-26 15.13.53.png"
-              alt="ピンクのイルカ"
-              width={40}
-              height={40}
-              className="rounded-lg"
-            />
+            <span className="text-2xl">🐬</span>
             使い方
           </h2>
           <div className="space-y-4">
