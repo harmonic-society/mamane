@@ -48,9 +48,12 @@ export async function updateSession(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
+    console.log("BAN check - user:", user.id, "result:", profileResult.data, "error:", profileResult.error);
+
     const profile = profileResult.data as { is_banned: boolean | null } | null;
 
     if (profile?.is_banned === true) {
+      console.log("User is BANNED, logging out:", user.id);
       // BANされている場合はセッションを削除してログインページにリダイレクト
       await supabase.auth.signOut();
       const bannedUrl = new URL("/login", request.url);
