@@ -23,28 +23,44 @@ export function DeleteButton({ triviaId, userId, authorId, isAdmin = false }: De
   }
 
   const handleDelete = async () => {
+    const isOwnPost = userId === authorId;
     setIsDeleting(true);
 
-    const supabase = createClient();
+    try {
+      // 自分の投稿でない場合は管理者APIを使用
+      if (!isOwnPost) {
+        const response = await fetch("/api/admin/delete-trivia", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ triviaId }),
+        });
 
-    // 管理者の場合はuser_idの制約なしで削除
-    let query = supabase.from("trivia").delete().eq("id", triviaId);
-    if (!isAdmin) {
-      query = query.eq("user_id", userId);
-    }
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "削除に失敗しました");
+        }
+      } else {
+        // 自分の投稿は直接削除
+        const supabase = createClient();
+        const { error } = await supabase
+          .from("trivia")
+          .delete()
+          .eq("id", triviaId)
+          .eq("user_id", userId);
 
-    const { error } = await query;
+        if (error) {
+          throw new Error(error.message);
+        }
+      }
 
-    if (error) {
+      // トップページへリダイレクト
+      router.push("/");
+      router.refresh();
+    } catch (error) {
       console.error("削除エラー:", error);
       alert("削除に失敗しました");
       setIsDeleting(false);
-      return;
     }
-
-    // トップページへリダイレクト
-    router.push("/");
-    router.refresh();
   };
 
   if (showConfirm) {
