@@ -39,7 +39,7 @@ export default async function Image() {
               marginRight: 20,
             }}
           >
-            🐘
+            🐬
           </div>
           <div
             style={{
