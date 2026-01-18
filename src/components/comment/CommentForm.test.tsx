@@ -221,7 +221,6 @@ describe('CommentForm', () => {
   })
 
   it('should redirect to login if userId becomes undefined during submit', async () => {
-    const user = userEvent.setup()
     render(
       <CommentForm
         triviaId="trivia-1"

@@ -8,7 +8,6 @@ const mockFrom = vi.fn()
 const mockSelect = vi.fn()
 const mockEq = vi.fn()
 const mockSingle = vi.fn()
-const mockOrder = vi.fn()
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: () => ({
@@ -71,7 +70,7 @@ describe('GET /api/admin/users', () => {
   it('should return 401 when not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null }, error: { message: 'No user' } })
 
-    const request = createRequest()
+    createRequest()
     const response = await GET()
 
     expect(response.status).toBe(401)

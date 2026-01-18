@@ -8,8 +8,6 @@ const mockFrom = vi.fn()
 const mockSelect = vi.fn()
 const mockEq = vi.fn()
 const mockSingle = vi.fn()
-const mockUpdate = vi.fn()
-const mockDelete = vi.fn()
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: () => ({
