@@ -22,6 +22,7 @@ import Image from "next/image";
 
 interface User {
   id: string;
+  email: string;
   username: string;
   avatar_url: string | null;
   is_admin: boolean;
@@ -126,24 +127,16 @@ export default function AdminPage() {
   };
 
   const fetchUsers = async () => {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, username, avatar_url, is_admin, is_banned, created_at")
-      .order("created_at", { ascending: false });
-
-    if (data) {
-      // Get trivia count for each user
-      const usersWithCount = await Promise.all(
-        data.map(async (user: any) => {
-          const { count } = await supabase
-            .from("trivia")
-            .select("id", { count: "exact" })
-            .eq("user_id", user.id);
-          return { ...user, trivia_count: count || 0 };
-        })
-      );
-      setUsers(usersWithCount);
+    try {
+      const response = await fetch("/api/admin/users");
+      if (!response.ok) {
+        console.error("ユーザー取得エラー");
+        return;
+      }
+      const data = await response.json();
+      setUsers(data.users || []);
+    } catch (error) {
+      console.error("ユーザー取得エラー:", error);
     }
   };
 
@@ -364,7 +357,8 @@ export default function AdminPage() {
                           </span>
                         )}
                       </p>
-                      <p className="text-sm text-gray-500">投稿数: {user.trivia_count}</p>
+                      <p className="text-sm text-gray-500">{user.email}</p>
+                      <p className="text-xs text-gray-400">投稿数: {user.trivia_count}</p>
                     </div>
                   </Link>
                   {!user.is_admin && (
