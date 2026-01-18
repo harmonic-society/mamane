@@ -107,8 +107,8 @@ describe('GET /api/admin/users', () => {
     mockAdminListUsers.mockResolvedValueOnce({
       data: {
         users: [
-          { id: 'user-1', email: 'user1@example.com' },
-          { id: 'user-2', email: 'user2@example.com' },
+          { id: 'user-1', email: 'user1@example.com', created_at: '2024-01-01T00:00:00Z', email_confirmed_at: '2024-01-01T00:00:00Z' },
+          { id: 'user-2', email: 'user2@example.com', created_at: '2024-01-02T00:00:00Z', email_confirmed_at: null },
         ],
       },
       error: null,
@@ -148,8 +148,11 @@ describe('GET /api/admin/users', () => {
     expect(response.status).toBe(200)
     const data = await response.json()
     expect(data.users).toHaveLength(2)
-    expect(data.users[0].email).toBe('user1@example.com')
-    expect(data.users[0].username).toBe('user1')
+    // user-2 is first because it has a later created_at (sorted descending)
+    expect(data.users[0].email).toBe('user2@example.com')
+    expect(data.users[0].username).toBe('user2')
+    expect(data.users[1].email).toBe('user1@example.com')
+    expect(data.users[1].username).toBe('user1')
   })
 
   it('should return 500 when auth list fails', async () => {
@@ -183,7 +186,7 @@ describe('GET /api/admin/users', () => {
       error: null,
     })
     mockAdminListUsers.mockResolvedValueOnce({
-      data: { users: [{ id: 'user-1', email: 'user1@example.com' }] },
+      data: { users: [{ id: 'user-1', email: 'user1@example.com', created_at: '2024-01-01T00:00:00Z', email_confirmed_at: '2024-01-01T00:00:00Z' }] },
       error: null,
     })
 
@@ -227,7 +230,7 @@ describe('GET /api/admin/users', () => {
       error: null,
     })
     mockAdminListUsers.mockResolvedValueOnce({
-      data: { users: [{ id: 'user-1' }] }, // No email
+      data: { users: [{ id: 'user-1', created_at: '2024-01-01T00:00:00Z', email_confirmed_at: null }] }, // No email
       error: null,
     })
 
@@ -269,7 +272,7 @@ describe('GET /api/admin/users', () => {
       error: null,
     })
     mockAdminListUsers.mockResolvedValueOnce({
-      data: { users: [{ id: 'user-1', email: 'user1@example.com' }] },
+      data: { users: [{ id: 'user-1', email: 'user1@example.com', created_at: '2024-01-01T00:00:00Z', email_confirmed_at: '2024-01-01T00:00:00Z' }] },
       error: null,
     })
     mockAdminOrder.mockResolvedValueOnce({
@@ -291,6 +294,7 @@ describe('GET /api/admin/users', () => {
     const user = data.users[0]
     expect(user).toHaveProperty('id')
     expect(user).toHaveProperty('email')
+    expect(user).toHaveProperty('email_confirmed_at')
     expect(user).toHaveProperty('username')
     expect(user).toHaveProperty('avatar_url')
     expect(user).toHaveProperty('is_admin')
