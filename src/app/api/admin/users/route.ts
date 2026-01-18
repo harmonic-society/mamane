@@ -57,30 +57,29 @@ export async function GET() {
       }
     }
 
-    // emailマップとemail_confirmed_atマップを作成
-    const emailMap: Record<string, string> = {};
-    const emailConfirmedAtMap: Record<string, string | null> = {};
-    if (authData?.users) {
-      for (const authUser of authData.users) {
-        if (authUser.email) {
-          emailMap[authUser.id] = authUser.email;
-        }
-        emailConfirmedAtMap[authUser.id] = authUser.email_confirmed_at || null;
+    // profilesマップを作成
+    const profileMap: Record<string, any> = {};
+    if (profiles) {
+      for (const profile of profiles) {
+        profileMap[profile.id] = profile;
       }
     }
 
-    // profilesとauthデータをマージ
-    const users = (profiles || []).map((profile: any) => ({
-      id: profile.id,
-      email: emailMap[profile.id] || "",
-      email_confirmed_at: emailConfirmedAtMap[profile.id] || null,
-      username: profile.username,
-      avatar_url: profile.avatar_url,
-      is_admin: profile.is_admin,
-      is_banned: profile.is_banned,
-      created_at: profile.created_at,
-      trivia_count: countMap[profile.id] || 0,
-    }));
+    // Auth usersを基準にマージ（メール未確認ユーザーも含める）
+    const users = (authData?.users || []).map((authUser: any) => {
+      const profile = profileMap[authUser.id];
+      return {
+        id: authUser.id,
+        email: authUser.email || "",
+        email_confirmed_at: authUser.email_confirmed_at || null,
+        username: profile?.username || authUser.email?.split("@")[0] || "未設定",
+        avatar_url: profile?.avatar_url || null,
+        is_admin: profile?.is_admin || false,
+        is_banned: profile?.is_banned || false,
+        created_at: authUser.created_at,
+        trivia_count: countMap[authUser.id] || 0,
+      };
+    }).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     return NextResponse.json({ users });
   } catch (error) {
