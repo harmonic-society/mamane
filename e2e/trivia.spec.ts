@@ -5,7 +5,7 @@ test.describe('Trivia Page', () => {
     await page.goto('/')
 
     // Check page title or header
-    await expect(page).toHaveTitle(/mamane/)
+    await expect(page).toHaveTitle(/Rasher/)
 
     // Check that the main content area exists
     await expect(page.locator('main')).toBeVisible()

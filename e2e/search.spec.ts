@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Search Functionality', () => {
   test('should display search bar', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/search')
 
     // Look for search input
     const searchInput = page.locator('input[placeholder*="検索"]')
@@ -10,7 +10,7 @@ test.describe('Search Functionality', () => {
   })
 
   test('should search for trivia', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/search')
 
     // Find search input
     const searchInput = page.locator('input[placeholder*="検索"]')
@@ -35,7 +35,7 @@ test.describe('Search Functionality', () => {
   })
 
   test('should clear search input', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/search')
 
     const searchInput = page.locator('input[placeholder*="検索"]')
 
@@ -53,7 +53,7 @@ test.describe('Search Functionality', () => {
   })
 
   test('should handle empty search', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/search')
 
     const searchInput = page.locator('input[placeholder*="検索"]')
 
@@ -61,12 +61,12 @@ test.describe('Search Functionality', () => {
     await searchInput.focus()
     await searchInput.press('Enter')
 
-    // Should stay on same page (not navigate)
-    await expect(page).toHaveURL('/')
+    // Should stay on search page (not navigate away)
+    await expect(page).toHaveURL(/\/search/)
   })
 
   test('should encode special characters in search', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/search')
 
     const searchInput = page.locator('input[placeholder*="検索"]')
 
