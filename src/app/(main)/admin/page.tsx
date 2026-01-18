@@ -16,6 +16,8 @@ import {
   Plus,
   Save,
   X,
+  MailCheck,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -23,6 +25,7 @@ import Image from "next/image";
 interface User {
   id: string;
   email: string;
+  email_confirmed_at: string | null;
   username: string;
   avatar_url: string | null;
   is_admin: boolean;
@@ -205,6 +208,55 @@ export default function AdminPage() {
     }
   };
 
+  const handleVerifyEmail = async (userId: string) => {
+    if (!confirm("このユーザーのメールを手動で確認済みにしますか？")) return;
+
+    try {
+      const response = await fetch("/api/admin/verify-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(`エラー: ${result.error}${result.details ? `\n詳細: ${result.details}` : ""}`);
+        return;
+      }
+
+      alert("メール確認状態を更新しました");
+      fetchUsers();
+    } catch (error) {
+      console.error("メール確認処理エラー:", error);
+      alert("メール確認処理に失敗しました");
+    }
+  };
+
+  const handleResendVerification = async (userId: string, email: string) => {
+    if (!confirm(`${email} に確認メールを再送信しますか？`)) return;
+
+    try {
+      const response = await fetch("/api/admin/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, email }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(`エラー: ${result.error}${result.details ? `\n詳細: ${result.details}` : ""}`);
+        return;
+      }
+
+      alert("確認メールを送信しました");
+    } catch (error) {
+      console.error("確認メール送信エラー:", error);
+      alert("確認メールの送信に失敗しました");
+    }
+  };
+
   const handleDeleteTrivia = async (triviaId: string) => {
     if (!confirm("この投稿を削除しますか？")) return;
 
@@ -344,7 +396,7 @@ export default function AdminPage() {
                       </div>
                     )}
                     <div>
-                      <p className="font-medium flex items-center gap-2">
+                      <p className="font-medium flex items-center gap-2 flex-wrap">
                         {user.username}
                         {user.is_admin && (
                           <span className="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded">
@@ -356,24 +408,53 @@ export default function AdminPage() {
                             BAN
                           </span>
                         )}
+                        {user.email_confirmed_at ? (
+                          <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">
+                            確認済み
+                          </span>
+                        ) : (
+                          <span className="text-xs bg-yellow-100 text-yellow-600 px-2 py-0.5 rounded">
+                            未確認
+                          </span>
+                        )}
                       </p>
                       <p className="text-sm text-gray-500">{user.email}</p>
                       <p className="text-xs text-gray-400">投稿数: {user.trivia_count}</p>
                     </div>
                   </Link>
-                  {!user.is_admin && (
-                    <button
-                      onClick={() => handleBanUser(user.id, user.is_banned)}
-                      className={`p-2 rounded-lg ${
-                        user.is_banned
-                          ? "bg-green-100 text-green-600 hover:bg-green-200"
-                          : "bg-red-100 text-red-600 hover:bg-red-200"
-                      }`}
-                      title={user.is_banned ? "BAN解除" : "BAN"}
-                    >
-                      <Ban className="w-4 h-4" />
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {!user.email_confirmed_at && (
+                      <>
+                        <button
+                          onClick={() => handleVerifyEmail(user.id)}
+                          className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200"
+                          title="手動で確認済みにする"
+                        >
+                          <MailCheck className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleResendVerification(user.id, user.email)}
+                          className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200"
+                          title="確認メールを再送信"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                    {!user.is_admin && (
+                      <button
+                        onClick={() => handleBanUser(user.id, user.is_banned)}
+                        className={`p-2 rounded-lg ${
+                          user.is_banned
+                            ? "bg-green-100 text-green-600 hover:bg-green-200"
+                            : "bg-red-100 text-red-600 hover:bg-red-200"
+                        }`}
+                        title={user.is_banned ? "BAN解除" : "BAN"}
+                      >
+                        <Ban className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

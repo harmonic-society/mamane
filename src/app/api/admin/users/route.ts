@@ -57,13 +57,15 @@ export async function GET() {
       }
     }
 
-    // emailマップを作成
+    // emailマップとemail_confirmed_atマップを作成
     const emailMap: Record<string, string> = {};
+    const emailConfirmedAtMap: Record<string, string | null> = {};
     if (authData?.users) {
       for (const authUser of authData.users) {
         if (authUser.email) {
           emailMap[authUser.id] = authUser.email;
         }
+        emailConfirmedAtMap[authUser.id] = authUser.email_confirmed_at || null;
       }
     }
 
@@ -71,6 +73,7 @@ export async function GET() {
     const users = (profiles || []).map((profile: any) => ({
       id: profile.id,
       email: emailMap[profile.id] || "",
+      email_confirmed_at: emailConfirmedAtMap[profile.id] || null,
       username: profile.username,
       avatar_url: profile.avatar_url,
       is_admin: profile.is_admin,
