@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
   // 豆知識の情報を取得
   const { data: trivia, error: triviaError } = await supabase
     .from("trivia")
-    .select("id, title, user_id")
+    .select("id, title, user_id, hee_count")
     .eq("id", triviaId)
-    .single() as { data: { id: string; title: string; user_id: string } | null; error: any };
+    .single() as { data: { id: string; title: string; user_id: string; hee_count: number } | null; error: any };
 
   if (triviaError || !trivia) {
     return NextResponse.json({ error: "Trivia not found" }, { status: 404 });
@@ -51,6 +51,12 @@ export async function POST(request: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // hee_countを直接更新
+  await supabase
+    .from("trivia")
+    .update({ hee_count: trivia.hee_count + 1 } as any)
+    .eq("id", triviaId);
 
   // 反応したユーザーのプロフィールを取得
   const { data: actorProfile } = await supabase
