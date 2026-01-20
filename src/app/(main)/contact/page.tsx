@@ -45,8 +45,7 @@ export default function ContactPage() {
             送信完了
           </h1>
           <p className="text-gray-600">
-            お問い合わせありがとうございます。<br />
-            内容を確認次第、ご連絡いたします。
+            お問い合わせありがとうございます。
           </p>
         </div>
       </div>
