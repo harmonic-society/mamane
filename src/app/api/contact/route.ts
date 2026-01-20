@@ -40,8 +40,12 @@ export async function POST(request: Request) {
 
     // メール送信
     try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
+      const apiKey = process.env.RESEND_API_KEY;
+      console.log("RESEND_API_KEY exists:", !!apiKey);
+      console.log("RESEND_API_KEY length:", apiKey?.length || 0);
+
+      const resend = new Resend(apiKey);
+      const result = await resend.emails.send({
         from: "Rasher <noreply@resend.dev>",
         to: ["yokoyama@harmonic-society.co.jp", "morota@harmonic-society.co.jp"],
         subject: `【Rasher】お問い合わせ: ${name}様`,
@@ -53,6 +57,7 @@ export async function POST(request: Request) {
           <p style="white-space: pre-wrap;">${content}</p>
         `,
       });
+      console.log("Resend result:", JSON.stringify(result));
     } catch (emailError) {
       console.error("Email send error:", emailError);
       // メール送信失敗してもDBには保存済みなので成功扱い
