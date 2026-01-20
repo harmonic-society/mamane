@@ -2,8 +2,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: Request) {
   try {
     const { name, email, content } = await request.json();
@@ -42,6 +40,7 @@ export async function POST(request: Request) {
 
     // メール送信
     try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: "Rasher <noreply@resend.dev>",
         to: ["yokoyama@harmonic-society.co.jp", "morota@harmonic-society.co.jp"],

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -52,10 +53,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // hee_countを直接更新
-  await supabase
+  // hee_countを直接更新（管理者クライアントでRLSバイパス）
+  const adminSupabase = createAdminClient();
+  await adminSupabase
     .from("trivia")
-    .update({ hee_count: trivia.hee_count + 1 } as any)
+    .update({ hee_count: trivia.hee_count + 1 })
     .eq("id", triviaId);
 
   // 反応したユーザーのプロフィールを取得
