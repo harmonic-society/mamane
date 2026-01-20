@@ -1,5 +1,8 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
@@ -35,6 +38,25 @@ export async function POST(request: Request) {
         { error: "送信に失敗しました" },
         { status: 500 }
       );
+    }
+
+    // メール送信
+    try {
+      await resend.emails.send({
+        from: "Rasher <noreply@resend.dev>",
+        to: ["yokoyama@harmonic-society.co.jp", "morota@harmonic-society.co.jp"],
+        subject: `【Rasher】お問い合わせ: ${name}様`,
+        html: `
+          <h2>Rasherにお問い合わせがありました</h2>
+          <p><strong>お名前:</strong> ${name}</p>
+          <p><strong>メールアドレス:</strong> ${email}</p>
+          <p><strong>内容:</strong></p>
+          <p style="white-space: pre-wrap;">${content}</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Email send error:", emailError);
+      // メール送信失敗してもDBには保存済みなので成功扱い
     }
 
     return NextResponse.json({ success: true });
