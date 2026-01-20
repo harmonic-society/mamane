@@ -27,6 +27,9 @@ export function Footer() {
             <Link href="/privacy" className="hover:text-pink-500 transition-colors">
               プライバシーポリシー
             </Link>
+            <Link href="/contact" className="hover:text-pink-500 transition-colors">
+              お問い合わせ
+            </Link>
           </nav>
 
           {/* Copyright */}
