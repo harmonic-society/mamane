@@ -32,7 +32,14 @@ function LoginForm() {
     });
 
     if (error) {
-      setError("メールアドレスまたはパスワードが間違っています");
+      console.error("Login error:", error.message);
+      if (error.message.includes("Email not confirmed")) {
+        setError("メールアドレスが確認されていません。確認メールのリンクをクリックしてください。");
+      } else if (error.message.includes("Invalid login credentials")) {
+        setError("メールアドレスまたはパスワードが間違っています");
+      } else {
+        setError(`ログインに失敗しました: ${error.message}`);
+      }
       setIsLoading(false);
       return;
     }
