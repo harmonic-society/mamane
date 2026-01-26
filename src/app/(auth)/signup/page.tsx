@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isEmailSent, setIsEmailSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +48,7 @@ export default function SignupPage() {
     }
 
     // ユーザー登録
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
@@ -54,6 +56,7 @@ export default function SignupPage() {
         data: {
           username,
         },
+        emailRedirectTo: `${siteUrl}/api/auth/callback`,
       },
     });
 
@@ -77,11 +80,48 @@ export default function SignupPage() {
       if (profileError && !profileError.message.includes("duplicate")) {
         console.error("Profile creation error:", profileError);
       }
+
+      // メール確認が必要かどうかをチェック
+      // identities が空 = メール確認待ち
+      if (data.user.identities?.length === 0 || !data.session) {
+        setIsEmailSent(true);
+        setIsLoading(false);
+        return;
+      }
     }
 
     router.push("/");
     router.refresh();
   };
+
+  // メール確認待ち画面
+  if (isEmailSent) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-md">
+              <Mail className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold mb-4">確認メールを送信しました</h1>
+          <p className="text-gray-600 mb-4">
+            <span className="font-medium text-pink-600">{email}</span><br />
+            に確認メールを送信しました。
+          </p>
+          <p className="text-gray-500 text-sm">
+            メール内のリンクをクリックして登録を完了してください。
+          </p>
+          <Link
+            href="/login"
+            className="inline-block mt-6 text-pink-600 hover:underline"
+          >
+            ログインページへ
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md">
