@@ -81,9 +81,19 @@ export default function SignupPage() {
         console.error("Profile creation error:", profileError);
       }
 
-      // メール確認が必要かどうかをチェック
-      // identities が空 = メール確認待ち
-      if (data.user.identities?.length === 0 || !data.session) {
+      // 自動でメール確認を行う
+      try {
+        await fetch("/api/auth/auto-verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: data.user.id }),
+        });
+      } catch (verifyError) {
+        console.error("Auto verify error:", verifyError);
+      }
+
+      // セッションがない場合は再ログインを促す
+      if (!data.session) {
         setIsEmailSent(true);
         setIsLoading(false);
         return;
@@ -94,29 +104,25 @@ export default function SignupPage() {
     router.refresh();
   };
 
-  // メール確認待ち画面
+  // 登録完了画面
   if (isEmailSent) {
     return (
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center shadow-md">
-              <Mail className="w-8 h-8 text-white" />
+              <span className="text-3xl">🐬</span>
             </div>
           </div>
-          <h1 className="text-2xl font-bold mb-4">確認メールを送信しました</h1>
+          <h1 className="text-2xl font-bold mb-4">登録完了！</h1>
           <p className="text-gray-600 mb-4">
-            <span className="font-medium text-pink-600">{email}</span><br />
-            に確認メールを送信しました。
-          </p>
-          <p className="text-gray-500 text-sm">
-            メール内のリンクをクリックして登録を完了してください。
+            アカウントの登録が完了しました。
           </p>
           <Link
             href="/login"
-            className="inline-block mt-6 text-pink-600 hover:underline"
+            className="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-pink-400 to-pink-600 text-white rounded-lg font-medium hover:shadow-lg transition-shadow"
           >
-            ログインページへ
+            ログインする
           </Link>
         </div>
       </div>
